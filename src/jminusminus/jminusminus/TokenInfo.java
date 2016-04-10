@@ -11,16 +11,22 @@ package jminusminus;
  */
 
 enum TokenKind {
-    EOF("<EOF>"), ABSTRACT("abstract"), BOOLEAN("boolean"), CHAR("char"), CLASS(
-            "class"), ELSE("else"), EXTENDS("extends"), FALSE("false"), IF("if"), IMPORT(
-            "import"), INSTANCEOF("instanceof"), INT("int"), NEW("new"), NULL(
-            "null"), PACKAGE("package"), PRIVATE("private"), PROTECTED(
-            "protected"), PUBLIC("public"), RETURN("return"), STATIC("static"), SUPER(
-            "super"), THIS("this"), TRUE("true"), VOID("void"), WHILE("while"), PLUS(
-            "+"), ASSIGN("="), DEC("--"), EQUAL("=="), GT(">"), INC("++"), LAND(
+    EOF("<EOF>"), ABSTRACT("abstract"), ASSERT("assert"), BOOLEAN("boolean"), BREAK("break"), 
+    		BYTE("byte"), CASE("case"), CATCH("catch"), CHAR("char"), CLASS(
+            "class"), CONST("const"), CONTINUE("continue"), DEFAULT("default"),
+    		 DO("do"), DOUBLE("double"), ELSE("else"), ENUM("enum"), EXTENDS("extends"),
+    		FINAL("final"), FINALLY("finally"), FLOAT("float"), FALSE("false"), 
+    		FOR("for"), GOTO("goto"), IF("if"), IMPORT("import"), IMPLEMENTS("implements"),
+    		INSTANCEOF("instanceof"), INT("int"), INTERFACE("interface"), LONG("long"),
+    		NATIVE("native"), NEW("new"), NULL("null"), PACKAGE("package"), PRIVATE("private"),
+    		PROTECTED("protected"), PUBLIC("public"), RETURN("return"), SHORT("short"),
+    		STATIC("static"), STRICTFP("strictfp"), SUPER("super"), SWITCH("switch"), 
+    		SYNCHRONIZED("synchronized"), THIS("this"), THROW("throw"), THROWS("throws"), 
+    		TRANSIENT("transient"), TRY("try"), TRUE("true"), VOLATILE("volatile"),
+    		VOID("void"), WHILE("while"), PLUS("+"), ASSIGN("="), DEC("--"), EQUAL("=="), GT(">"), INC("++"), LAND(
             "&&"), LE("<="), LNOT("!"), MINUS("-"), PLUS_ASSIGN("+="), STAR("*"), LPAREN(
             "("), RPAREN(")"), LCURLY("{"), RCURLY("}"), LBRACK("["), RBRACK(
-            "]"), SEMI(";"), COMMA(","), DOT("."), IDENTIFIER("<IDENTIFIER>"), INT_LITERAL(
+            "]"), SEMI(";"), COMMA(","), DOT("."), DOUBLE_LITERAL("<DOUBLE_LITERAL>"), IDENTIFIER("<IDENTIFIER>"), INT_LITERAL(
             "<INT_LITERAL>"), CHAR_LITERAL("<CHAR_LITERAL>"), STRING_LITERAL(
             "<STRING_LITERAL>");
 
