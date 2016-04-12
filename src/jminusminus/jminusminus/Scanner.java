@@ -360,8 +360,10 @@ class Scanner {
 		case '0':
 			buffer = new StringBuffer();
 			buffer.append(0);
+			char previous = ch;
 			nextCh();
 			while (ch == '_') {
+				previous = ch;
 				nextCh();
 			}
 			
@@ -369,16 +371,19 @@ class Scanner {
 			if (isDigit(ch)) {
 //				buffer.append(0);
 				while (ch >= '0' && ch <= '7') {
-					if (ch >= '8') reportScannerError("The octal literal of 0%c is out of range", ch);
-					else buffer.append(ch);
+					buffer.append(ch);
 					nextCh();
 				}
 				
-				
+				if (isDigit(ch)) {
+					buffer.append(ch);
+					reportScannerError("The octal literal of %s is out of range", buffer.toString());
+				}
 				return new TokenInfo(OCTAL_LITERAL, buffer.toString(), line);
 			}
 			
-			char previous = ch;
+			if (previous == '_') reportScannerError("Underscores must be within digits");
+			
 			while (ch == '0'|| ch == '_') {
 				previous = ch;
 				nextCh();
@@ -417,6 +422,8 @@ class Scanner {
 						buffer.append(ch);
 						previous = ch;
 						nextCh();
+						
+						if (ch == '_') reportScannerError("Underscores must be within digits");
 						while ((ch >= '0' && ch <= '9' || ch >= 'a' && ch <= 'f'
 						|| ch >= 'A' && ch <= 'F') || ch == '_') {
 							if (ch != '_') buffer.append(ch);
@@ -431,6 +438,8 @@ class Scanner {
 						buffer.append(ch);
 						previous = ch;
 						nextCh();
+						
+						if (ch == '_') reportScannerError("Underscores must be within digits");
 						while (ch == '0' || ch == '1' || ch == '_') {
 							if (ch != '_') buffer.append(ch);
 							previous = ch;
