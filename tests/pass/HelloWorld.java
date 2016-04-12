@@ -54,6 +54,10 @@ public class HelloWorld {
      	 * should be ignored
      	 */
      	
+     	/**
+     	 * /* ignore */
+     	 */
+     	
      	a = 2 / 3;
      	a /= 3;
      	a = a >>> 2;

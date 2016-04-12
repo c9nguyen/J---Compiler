@@ -138,16 +138,28 @@ class Scanner {
 						nextCh();
 					}            
 				} else if (ch == '*') {
+					int counter = 1; 	//counter of nest comments
 					nextCh();
 					char previous = ch;
 
-					while ((ch != '/' || previous != '*') && ch != EOFCH ) {
-						previous = ch;
-						nextCh();
-					}
+					while (counter > 0) {
+						while ((ch != '/' || previous != '*') && ch != EOFCH ) {
+							if (ch == '*' && previous == '/') {
+								counter++;
+							}
+							
+							previous = ch;
+							nextCh();
+						}
 
-					if (ch == EOFCH) {
-						reportScannerError("Operatorsss /* is not supported in j--.");
+						if (ch == EOFCH) {
+							reportScannerError("Operatorsss /* is not supported in j--.");
+							counter = 0;
+						} else {
+							counter--;
+							previous = ch;
+							nextCh();
+						}
 					}
 
 					nextCh();
