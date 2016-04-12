@@ -35,7 +35,9 @@ enum TokenKind {
     		BITCOM("~"), LEFT_SHIFT("<<"), RIGHT_SHIFT(">>"), ZERO_RIGHT_SHIFT(">>>"), LOR("||"),
     		MINUS_ASSIGN("-="), MULTIPLY_ASSIGN("*="), DIVISION_ASSIGN("/="), MOD_ASSIGN("%="),
     		LS_ASSIGN("<<="), RS_ASSIGN(">>="), AND_ASSIGN("&="), XOR_ASSIGN("^="), OR_ASSIGN("|="), 
-    		TERNARY_HEAD("?"), TERNARY_END(":");
+    		TERNARY_HEAD("?"), TERNARY_END(":"),
+    		//
+    		HEX_LITERAL("<HEXICAL_LITERAL>"), OCTAL_LITERAL("<OCTAL_LITERAL>"), BINARY_LITERAL("<BINARY_LITERAL>");
 
     /** The token's string representation. */
     private String image;

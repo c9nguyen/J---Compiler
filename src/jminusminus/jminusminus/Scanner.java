@@ -358,6 +358,26 @@ class Scanner {
 		case EOFCH:
 			return new TokenInfo(EOF, line);
 		case '0':
+			buffer = new StringBuffer();
+			buffer.append(0);
+			nextCh();
+			while (ch == '_') {
+				nextCh();
+			}
+			
+			// Octal literal scanning
+			if (isDigit(ch)) {
+//				buffer.append(0);
+				while (ch >= '0' && ch <= '7') {
+					if (ch >= '8') reportScannerError("The octal literal of 0%c is out of range", ch);
+					else buffer.append(ch);
+					nextCh();
+				}
+				
+				
+				return new TokenInfo(OCTAL_LITERAL, buffer.toString(), line);
+			}
+			
 			char previous = ch;
 			while (ch == '0'|| ch == '_') {
 				previous = ch;
@@ -365,11 +385,12 @@ class Scanner {
 			}
 			if (previous == '_') reportScannerError("Underscores must be within digits");
 			else {
-				//Handle float point
+				//Handle cases
+				
+				
 				switch (ch) {
 					case '.':
-						buffer = new StringBuffer();
-						buffer.append(0);
+//						buffer.append(0);
 
 						String value = scanDouble(buffer);
 						if (ch == 'd' || ch == 'D') {
@@ -393,10 +414,39 @@ class Scanner {
 						return new TokenInfo(FLOAT_LITERAL, "0", line);
 					case 'x':
 					case 'X':
+						buffer.append(ch);
+						previous = ch;
+						nextCh();
+						while ((ch >= '0' && ch <= '9' || ch >= 'a' && ch <= 'f'
+						|| ch >= 'A' && ch <= 'F') || ch == '_') {
+							if (ch != '_') buffer.append(ch);
+							previous = ch;
+							nextCh();	
+						}
 						
+						if (previous == '_') reportScannerError("Underscores must be within digits");
+						return new TokenInfo(HEX_LITERAL, buffer.toString(), line);
 					case 'b':
 					case 'B':
-				
+						buffer.append(ch);
+						previous = ch;
+						nextCh();
+						while (ch == '0' || ch == '1' || ch == '_') {
+							if (ch != '_') buffer.append(ch);
+							previous = ch;
+							nextCh();	
+						}
+						
+						if (previous == '_') reportScannerError("Underscores must be within digits");
+						return new TokenInfo(BINARY_LITERAL, buffer.toString(), line);
+					case '1':
+					case '2':
+					case '3':
+					case '4':
+					case '5':
+					case '6':
+					case '7':
+						
 					default:
 						return new TokenInfo(INT_LITERAL, "0", line);
 				}

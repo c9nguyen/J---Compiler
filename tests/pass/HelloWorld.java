@@ -13,8 +13,9 @@ public class HelloWorld {
 
     public static void main(String[] args) {
         System.out.println(HelloWorld.message());
-     	int b = 2;
-     	int c = 3L;
+     	int b = 07;
+     	b = 0x23;
+     	b = 0b101;
   
     }
 
