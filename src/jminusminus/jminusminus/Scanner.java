@@ -362,122 +362,120 @@ class Scanner {
 			buffer.append(0);
 			char previous = ch;
 			nextCh();
-			while (ch == '_') {
+			
+			switch (ch) {
+			case 'L':
+			case 'l':		//Long
+				nextCh();
+				return new TokenInfo(LONG_LITERAL, "0", line);
+			case 'd':
+			case 'D':		//Double
+				nextCh();
+				return new TokenInfo(DOUBLE_LITERAL, "0", line);
+			case 'F':
+			case 'f':		//Float
+				nextCh();
+				return new TokenInfo(FLOAT_LITERAL, "0", line);
+			case 'x':
+			case 'X':
+				buffer.append(ch);
 				previous = ch;
 				nextCh();
-			}
+				
+				//Underscore before hex value
+				if (ch < '0' || ch > '9') {
+					reportScannerError("Invalid hex literal");
+					return new TokenInfo(HEX_LITERAL, buffer.toString(), line);
+				}
+				
+				while ((ch >= '0' && ch <= '9' || ch >= 'a' && ch <= 'f'
+				|| ch >= 'A' && ch <= 'F') || ch == '_') {
+					if (ch != '_') buffer.append(ch);
+					previous = ch;
+					nextCh();	
+				}
+				
+				//Underscore at the end of hex value
+				if (previous == '_') reportScannerError("Underscores must be within digits");
+				else if (ch == 'L' || ch == 'l') return new TokenInfo(LONG_HEX_LITERAL, buffer.toString(), line);
+				
+				return new TokenInfo(HEX_LITERAL, buffer.toString(), line);
+			case 'b':
+			case 'B':
+				buffer.append(ch);
+				previous = ch;
+				nextCh();
+				
+				if (ch != '0' || ch != '1') { 
+					reportScannerError("Invalid binary literal");
+					return new TokenInfo(BINARY_LITERAL, buffer.toString(), line);
+				}
+				while (ch == '0' || ch == '1' || ch == '_') {
+					if (ch != '_') buffer.append(ch);
+					previous = ch;
+					nextCh();	
+				}
+				
+				if (previous == '_') reportScannerError("Underscores must be within digits");
+				else if (ch == 'L' || ch == 'l') return new TokenInfo(LONG_BINARY_LITERAL, buffer.toString(), line);
+				
+				return new TokenInfo(HEX_LITERAL, buffer.toString(), line);
 			
-			// Octal literal scanning
-			if (isDigit(ch)) {
-//				buffer.append(0);
-				while (ch >= '0' && ch <= '7') {
-					buffer.append(ch);
+			case '0':
+			case '1':
+			case '2':
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7':
+			case '_':		//octal
+				//Scanning and ignoring underscores
+				while ((ch >= '0' && ch <= '7') || ch == '_') {
+					if (ch != '_') buffer.append(ch);
+					previous = ch;
 					nextCh();
 				}
-				
-				if (isDigit(ch)) {
-					buffer.append(ch);
-					reportScannerError("The octal literal of %s is out of range", buffer.toString());
-				}
-				return new TokenInfo(OCTAL_LITERAL, buffer.toString(), line);
-			}
-			
-			if (previous == '_') reportScannerError("Underscores must be within digits");
-			
-			while (ch == '0'|| ch == '_') {
-				previous = ch;
-				nextCh();
-			}
-			if (previous == '_') reportScannerError("Underscores must be within digits");
-			else {
-				//Handle cases
-				
-				
-				switch (ch) {
-					case '.':
-//						buffer.append(0);
 
-						String value = scanDouble(buffer);
-						if (ch == 'd' || ch == 'D') {
-							nextCh();
-						} else if (ch == 'f' || ch == 'F') {
-							nextCh();
-							return new TokenInfo(FLOAT_LITERAL, value, line);
-						}
-						return new TokenInfo(DOUBLE_LITERAL, value, line);
-					case 'L':
-					case 'l':
-						nextCh();
-						return new TokenInfo(LONG_LITERAL, "0", line);
-					case 'd':
-					case 'D':
-						nextCh();
-						return new TokenInfo(DOUBLE_LITERAL, "0", line);
-					case 'F':
-					case 'f':
-						nextCh();
-						return new TokenInfo(FLOAT_LITERAL, "0", line);
-					case 'x':
-					case 'X':
-						buffer.append(ch);
-						previous = ch;
-						nextCh();
-						
-						if (ch == '_') reportScannerError("Underscores must be within digits");
-						while ((ch >= '0' && ch <= '9' || ch >= 'a' && ch <= 'f'
-						|| ch >= 'A' && ch <= 'F') || ch == '_') {
-							if (ch != '_') buffer.append(ch);
-							previous = ch;
-							nextCh();	
-						}
-						
-						if (previous == '_') reportScannerError("Underscores must be within digits");
-						return new TokenInfo(HEX_LITERAL, buffer.toString(), line);
-					case 'b':
-					case 'B':
-						buffer.append(ch);
-						previous = ch;
-						nextCh();
-						
-						if (ch == '_') reportScannerError("Underscores must be within digits");
-						while (ch == '0' || ch == '1' || ch == '_') {
-							if (ch != '_') buffer.append(ch);
-							previous = ch;
-							nextCh();	
-						}
-						
-						if (previous == '_') reportScannerError("Underscores must be within digits");
-						return new TokenInfo(BINARY_LITERAL, buffer.toString(), line);
-					case '1':
-					case '2':
-					case '3':
-					case '4':
-					case '5':
-					case '6':
-					case '7':
-						
-					default:
-						return new TokenInfo(INT_LITERAL, "0", line);
+				// Check last digit
+				if (previous == '_') { 
+					reportScannerError("Underscores must be within digits");
+					return new TokenInfo(OCTAL_LITERAL, buffer.toString(), line); 
 				}
-//				if (ch == '.') {
-//					buffer = new StringBuffer();
-//					buffer.append(0);
-//
-//					String value = scanDouble(buffer);
-//					if (ch == 'd' || ch == 'D') {
-//						nextCh();
-//					} else if (ch == 'f' || ch == 'F') {
-//						nextCh();
-//						return new TokenInfo(FLOAT_LITERAL, value, line);
-//					}
-//					return new TokenInfo(DOUBLE_LITERAL, value, line);
-//				} else if (ch == 'L' || ch == 'l'){							//Or Long literal.
-//					nextCh();
-//					return new TokenInfo(LONG_LITERAL, "0", line);
-//				} else {													//Otherwise, int.
-//					return new TokenInfo(INT_LITERAL, "0", line);
-//				}
+				else if (ch == 'L' || ch == 'l') return new TokenInfo(LONG_OCTAL_LITERAL, buffer.toString(), line);
+				else if (ch == 'F' || ch == 'f') return new TokenInfo(FLOAT_LITERAL, buffer.toString(), line);
+				else if (ch == 'D' || ch == 'd') return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+				else if (ch != '8' && ch != '9') {	
+					return new TokenInfo(OCTAL_LITERAL, buffer.toString(), line);
+				}
+					//Out of range, check if it's a floating point value
+			case '8':
+			case '9':
+					while (isDigit(ch) || ch == '_') {
+						previous = ch;
+						if (ch != '_') buffer.append(ch);
+						nextCh();
+					}
+					
+					if (previous == '_') {
+						reportScannerError("Underscores must be within digits");
+					} else if (ch != '.') { 	//Not a floating point
+						reportScannerError("Octal literal %s out of range", buffer.toString());
+					} 		
+					//Floating point
+			case '.':
+				String value = scanDouble(buffer);
+				if (ch == 'd' || ch == 'D') {
+					nextCh();
+				} else if (ch == 'f' || ch == 'F') {
+					nextCh();
+					return new TokenInfo(FLOAT_LITERAL, value, line);
+				}
+				return new TokenInfo(DOUBLE_LITERAL, value, line);
+			default:
+				return new TokenInfo(INT_LITERAL, "0", line);
 			}
+			
 		case '1':
 		case '2':
 		case '3':
@@ -497,8 +495,9 @@ class Scanner {
 			
 			if (previous == '_') reportScannerError("Underscores must be within digits");
 			else {
+				//last digit
 				switch (ch) {
-				case '.':
+				case '.':	//floating point
 					String value = scanDouble(buffer);
 					if (ch == 'd' || ch == 'D') {
 						nextCh();
@@ -521,20 +520,6 @@ class Scanner {
 					return new TokenInfo(FLOAT_LITERAL, buffer.toString(), line);
 				default:
 					return new TokenInfo(INT_LITERAL, buffer.toString(), line);
-//				if (ch == '.') {
-//					String value = scanDouble(buffer);
-//					if (ch == 'd' || ch == 'D') {
-//						nextCh();
-//					} else if (ch == 'f' || ch == 'F') {
-//						nextCh();
-//						return new TokenInfo(FLOAT_LITERAL, value, line);
-//					}
-//					return new TokenInfo(DOUBLE_LITERAL, value, line);
-//				} else if (ch == 'L' || ch == 'l'){
-//					nextCh();
-//					return new TokenInfo(LONG_LITERAL, buffer.toString(), line);
-//				} else {
-//					return new TokenInfo(INT_LITERAL, buffer.toString(), line);
 				}
 			}
 		default:
