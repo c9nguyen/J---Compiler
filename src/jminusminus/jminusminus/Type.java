@@ -38,6 +38,15 @@ class Type {
 
     /** The primitive type, boolean. */
     public final static Type BOOLEAN = typeFor(boolean.class);
+    
+    /** The primitive type, double. */
+    public final static Type DOUBLE = typeFor(double.class);
+    
+    /** The primitive type, float. */
+    public final static Type FLOAT = typeFor(float.class);
+    
+    /** The primitive type, long. */
+    public final static Type LONG = typeFor(long.class);
 
     /** java.lang.Integer. */
     public final static Type BOXED_INT = typeFor(java.lang.Integer.class);
@@ -411,12 +420,15 @@ class Type {
      */
 
     private static String descriptorFor(Class<?> cls) {
-        return cls == null ? "V" : cls == void.class ? "V"
-                : cls.isArray() ? "[" + descriptorFor(cls.getComponentType())
-                        : cls.isPrimitive() ? (cls == int.class ? "I"
-                                : cls == char.class ? "C"
-                                        : cls == boolean.class ? "Z" : "?")
-                                : "L" + cls.getName().replace('.', '/') + ";";
+    	return cls == null ? "V" : cls == void.class ? "V"
+    			: cls.isArray() ? "[" + descriptorFor(cls.getComponentType())
+    			: cls.isPrimitive() ? (cls == int.class ? "I"
+    					: cls == char.class ? "C"
+    							: cls == double.class ? "D"
+    									: cls == float.class ? "F"
+    											: cls == long.class ? "L"
+    													: cls == boolean.class ? "Z" : "?")
+    					: "L" + cls.getName().replace('.', '/') + ";";
     }
 
     /**

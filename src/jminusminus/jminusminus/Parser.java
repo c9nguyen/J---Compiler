@@ -272,14 +272,14 @@ public class Parser {
      * Are we looking at a basic type? ie.
      * 
      * <pre>
-     * BOOLEAN | CHAR | INT
+     * BOOLEAN | CHAR | INT | DOUBLE | FLOAT | LONG
      * </pre>
      * 
      * @return true iff we're looking at a basic type; false otherwise.
      */
 
     private boolean seeBasicType() {
-        if (see(BOOLEAN) || see(CHAR) || see(INT)) {
+        if (see(BOOLEAN) || see(CHAR) || see(INT) || see(DOUBLE) || see(FLOAT) || see(LONG)) {
             return true;
         } else {
             return false;
@@ -302,7 +302,7 @@ public class Parser {
             return true;
         } else {
             scanner.recordPosition();
-            if (have(BOOLEAN) || have(CHAR) || have(INT)) {
+            if (have(BOOLEAN) || have(CHAR) || have(INT) || have(DOUBLE) || have(FLOAT) || have(LONG)) {
                 if (have(LBRACK) && see(RBRACK)) {
                     scanner.returnToPosition();
                     return true;
@@ -902,6 +902,16 @@ public class Parser {
             return Type.CHAR;
         } else if (have(INT)) {
             return Type.INT;
+        } else if (have(LONG)) {
+            return Type.LONG;   
+        } else if (have(LONG)) {
+            return Type.LONG;
+        } else if (have(DOUBLE)) {
+        	return Type.DOUBLE;
+        } else if (have(FLOAT)) {
+        	Type a = Type.FLOAT;
+        	System.out.println(Type.FLOAT);
+        	return a;
         } else {
             reportParserError("Type sought where %s found", scanner.token()
                     .image());
@@ -1128,6 +1138,8 @@ public class Parser {
         JExpression lhs = unaryExpression();
         while (more) {
             if (have(STAR)) {
+                lhs = new JMultiplyOp(line, lhs, unaryExpression());
+            } else if (have(DIVISION)) {
                 lhs = new JMultiplyOp(line, lhs, unaryExpression());
             } else {
                 more = false;
@@ -1390,8 +1402,8 @@ public class Parser {
      * Parse a literal.
      * 
      * <pre>
-     *   literal ::= INT_LITERAL | CHAR_LITERAL | STRING_LITERAL
-     *             | TRUE        | FALSE        | NULL
+     *   literal ::= INT_LITERAL | CHAR_LITERAL | STRING_LITERAL | LONG_LITERAL
+     *             | TRUE        | FALSE        | NULL			 | 
      * </pre>
      * 
      * @return an AST for a literal.
@@ -1401,10 +1413,16 @@ public class Parser {
         int line = scanner.token().line();
         if (have(INT_LITERAL)) {
             return new JLiteralInt(line, scanner.previousToken().image());
+        } else if (have(LONG_LITERAL)) {
+            return new JLiteralLong(line, scanner.previousToken().image());
         } else if (have(CHAR_LITERAL)) {
             return new JLiteralChar(line, scanner.previousToken().image());
+        } else if (have(DOUBLE_LITERAL)) {
+        	return new JLiteralDouble(line, scanner.previousToken().image());
         } else if (have(STRING_LITERAL)) {
             return new JLiteralString(line, scanner.previousToken().image());
+        } else if (have(FLOAT_LITERAL)) {
+            return new JLiteralFloat(line, scanner.previousToken().image());
         } else if (have(TRUE)) {
             return new JLiteralTrue(line);
         } else if (have(FALSE)) {

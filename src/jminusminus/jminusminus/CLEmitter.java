@@ -1401,6 +1401,53 @@ public class CLEmitter {
             mInstructionAfterLabel = true;
         }
     }
+    
+    /**
+     * Add a one argument instruction. Wideable instructions are widened if
+     * necessary by adding a WIDE instruction before the instruction. Following
+     * instructions can be added using this method:
+     * 
+     * <p/>
+     * Load Store Instructions:
+     * 
+     * <pre>
+     *   ILOAD, LLOAD, FLOAD, DLOAD, ALOAD, ISTORE, LSTORE, FSTORE, 
+     *   DSTORE, ASTORE, BIPUSH, SIPUSH
+     * </pre>
+     * 
+     * <p/>
+     * Flow Control Instructions:
+     * 
+     * <pre>
+     * RET
+     * </pre>
+     * 
+     * The opcodes for instructions are defined in CLConstants class.
+     * 
+     * @param opcode
+     *            opcode of the instruction.
+     * @param arg
+     *            the argument. For the instructions that deal with local
+     *            variables, the argument is the local variable index; for
+     *            BIPUSH and SIPUSH instructions, the argument is the constant
+     *            byte or short value.
+     */
+
+    public void addOneArgInstruction(int opcode, long arg) {
+        CLInstruction instr = null;
+        switch (CLInstruction.instructionInfo[opcode].category) {
+        case LOAD_STORE3:
+            instr = new CLLoadStoreInstruction(opcode, mPC++, arg);
+            break;
+        default:
+            reportOpcodeError(opcode);
+        }
+        if (instr != null) {
+            mPC += instr.operandCount();
+            mCode.add(instr);
+            mInstructionAfterLabel = true;
+        }
+    }
 
     /**
      * Add an IINC instruction to increment a variable by a constant. The

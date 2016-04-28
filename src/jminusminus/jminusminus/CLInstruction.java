@@ -365,6 +365,14 @@ abstract class CLInstruction {
      */
 
     public abstract ArrayList<Integer> toBytes();
+    
+    /**
+     * Return the bytecode for this instruction.
+     * 
+     * @return bytecode.
+     */
+
+    public abstract ArrayList<Long> longToBytes();
 
     /**
      * Return the byte from i at position byteNum.
@@ -378,6 +386,35 @@ abstract class CLInstruction {
 
     protected int byteAt(int i, int byteNum) {
         int j = 0, mask = 0xFF;
+        switch (byteNum) {
+        case 1: // lower order
+            j = i & mask;
+            break;
+        case 2:
+            j = (i >> 8) & mask;
+            break;
+        case 3:
+            j = (i >> 16) & mask;
+            break;
+        case 4: // higher order
+            j = (i >> 24) & mask;
+            break;
+        }
+        return j;
+    }
+    
+    /**
+     * Return the byte from i at position byteNum.
+     * 
+     * @param i
+     *            number whose individual byte is required.
+     * @param byteNum
+     *            the byte to return; 1 (lower) - 4 (higher) instructions.
+     * @return the byte at the specified position.
+     */
+
+    protected long byteAt(long i, int byteNum) {
+    	long j = 0, mask = 0xFF;
         switch (byteNum) {
         case 1: // lower order
             j = i & mask;
@@ -442,6 +479,18 @@ class CLObjectInstruction extends CLInstruction {
         bytes.add(byteAt(index, 1));
         return bytes;
     }
+    
+    /**
+     * @inheritDoc
+     */
+
+    public ArrayList<Long> longToBytes() {
+        ArrayList<Long> bytes = new ArrayList<Long>();
+        bytes.add((long) opcode);
+        bytes.add(byteAt((long) index, 2));
+        bytes.add(byteAt((long) index, 1));
+        return bytes;
+    }
 
 }
 
@@ -491,6 +540,18 @@ class CLFieldInstruction extends CLInstruction {
         bytes.add(opcode);
         bytes.add(byteAt(index, 2));
         bytes.add(byteAt(index, 1));
+        return bytes;
+    }
+    
+    /**
+     * @inheritDoc
+     */
+
+    public ArrayList<Long> longToBytes() {
+        ArrayList<Long> bytes = new ArrayList<Long>();
+        bytes.add((long) opcode);
+        bytes.add(byteAt((long) index, 2));
+        bytes.add(byteAt((long) index, 1));
         return bytes;
     }
 
@@ -585,6 +646,28 @@ class CLMethodInstruction extends CLInstruction {
             if (opcode == INVOKEINTERFACE) {
                 bytes.add(byteAt(nArgs, 1));
                 bytes.add(0);
+            }
+        }
+        return bytes;
+    }
+    
+    /**
+     * @inheritDoc
+     */
+
+    public ArrayList<Long> longToBytes() {
+        ArrayList<Long> bytes = new ArrayList<Long>();
+        bytes.add((long) opcode);
+        if (instructionInfo[opcode].category == METHOD1) {
+            bytes.add(byteAt((long) index, 2));
+            bytes.add(byteAt((long) index, 1));
+
+            // INVOKEINTERFACE expects the number of arguments of
+            // the method as the third operand and a fourth
+            // argument which must always be 0.
+            if (opcode == INVOKEINTERFACE) {
+                bytes.add(byteAt((long) nArgs, 1));
+                bytes.add(0l);
             }
         }
         return bytes;
@@ -694,6 +777,30 @@ class CLArrayInstruction extends CLInstruction {
         }
         return bytes;
     }
+    
+    /**
+     * @inheritDoc
+     */
+
+    public ArrayList<Long> longToBytes() {
+        ArrayList<Long> bytes = new ArrayList<Long>();
+        bytes.add((long) opcode);
+        switch (opcode) {
+        case NEWARRAY:
+            bytes.add(byteAt((long) type, 1));
+            break;
+        case ANEWARRAY:
+            bytes.add(byteAt((long) type, 2));
+            bytes.add(byteAt((long) type, 1));
+            break;
+        case MULTIANEWARRAY:
+            bytes.add(byteAt((long) type, 2));
+            bytes.add(byteAt((long) type, 1));
+            bytes.add(byteAt((long) dim, 1));
+            break;
+        }
+        return bytes;
+    }
 
 }
 
@@ -711,6 +818,9 @@ class CLArithmeticInstruction extends CLInstruction {
 
     /** Increment value for IINC instruction. */
     private int constVal;
+    
+    /** Increment value for IINC instruction. */
+    private long constLongVal;
 
     /**
      * Construct a CLArithmeticInstruction object for ARITHMETIC1 instructions.
@@ -778,6 +888,28 @@ class CLArithmeticInstruction extends CLInstruction {
         }
         return bytes;
     }
+    
+
+    /**
+     * @inheritDoc
+     */
+
+    public ArrayList<Long> longToBytes() {
+        ArrayList<Long> bytes = new ArrayList<Long>();
+        bytes.add((long) opcode);
+        if (opcode == IINC) {
+            if (isWidened) {
+                bytes.add((long) byteAt(localVariableIndex, 2));
+                bytes.add((long) byteAt(localVariableIndex, 1));
+                bytes.add(byteAt(constLongVal, 2));
+                bytes.add(byteAt(constLongVal, 1));
+            } else {
+                bytes.add((long) byteAt(localVariableIndex, 1));
+                bytes.add(byteAt(constLongVal, 1));
+            }
+        }
+        return bytes;
+    }
 
 }
 
@@ -814,6 +946,17 @@ class CLBitInstruction extends CLInstruction {
         bytes.add(opcode);
         return bytes;
     }
+    
+    /**
+     * @inheritDoc
+     */
+
+    public ArrayList<Long> longToBytes() {
+        ArrayList<Long> bytes = new ArrayList<Long>();
+        bytes.add((long) opcode);
+        return bytes;
+    }
+
 
 }
 
@@ -848,6 +991,16 @@ class CLComparisonInstruction extends CLInstruction {
     public ArrayList<Integer> toBytes() {
         ArrayList<Integer> bytes = new ArrayList<Integer>();
         bytes.add(opcode);
+        return bytes;
+    }
+    
+    /**
+     * @inheritDoc
+     */
+
+    public ArrayList<Long> longToBytes() {
+        ArrayList<Long> bytes = new ArrayList<Long>();
+        bytes.add((long) opcode);
         return bytes;
     }
 
@@ -887,6 +1040,15 @@ class CLConversionInstruction extends CLInstruction {
         return bytes;
     }
 
+    /**
+     * @inheritDoc
+     */
+
+    public ArrayList<Long> longToBytes() {
+        ArrayList<Long> bytes = new ArrayList<Long>();
+        bytes.add((long) opcode);
+        return bytes;
+    }
 }
 
 /**
@@ -1222,6 +1384,84 @@ class CLFlowControlInstruction extends CLInstruction {
         }
         return bytes;
     }
+    
+    public ArrayList<Long> longToBytes() {
+        ArrayList<Long> bytes = new ArrayList<Long>();
+        bytes.add((long) opcode);
+        switch (opcode) {
+        case RET:
+            if (isWidened) {
+                bytes.add((long) byteAt(index, 2));
+                bytes.add((long) byteAt(index, 1));
+            } else {
+                bytes.add((long) byteAt(index, 1));
+            }
+            break;
+        case TABLESWITCH:
+            for (int i = 0; i < pad; i++) {
+                bytes.add(0l);
+            }
+            bytes.add((long) byteAt(defaultOffset, 4));
+            bytes.add((long) byteAt(defaultOffset, 3));
+            bytes.add((long) byteAt(defaultOffset, 2));
+            bytes.add((long) byteAt(defaultOffset, 1));
+            bytes.add((long) byteAt(low, 4));
+            bytes.add((long) byteAt(low, 3));
+            bytes.add((long) byteAt(low, 2));
+            bytes.add((long) byteAt(low, 1));
+            bytes.add((long) byteAt(high, 4));
+            bytes.add((long) byteAt(high, 3));
+            bytes.add((long) byteAt(high, 2));
+            bytes.add((long) byteAt(high, 1));
+            for (int i = 0; i < offsets.size(); i++) {
+                int jumpOffset = offsets.get(i);
+                bytes.add((long) byteAt(jumpOffset, 4));
+                bytes.add((long) byteAt(jumpOffset, 3));
+                bytes.add((long) byteAt(jumpOffset, 2));
+                bytes.add((long) byteAt(jumpOffset, 1));
+            }
+            break;
+        case LOOKUPSWITCH:
+            for (int i = 0; i < pad; i++) {
+                bytes.add(0l);
+            }
+            bytes.add((long) byteAt(defaultOffset, 4));
+            bytes.add((long) byteAt(defaultOffset, 3));
+            bytes.add((long) byteAt(defaultOffset, 2));
+            bytes.add((long) byteAt(defaultOffset, 1));
+            bytes.add((long) byteAt(numPairs, 4));
+            bytes.add((long) byteAt(numPairs, 3));
+            bytes.add((long) byteAt(numPairs, 2));
+            bytes.add((long) byteAt(numPairs, 1));
+            Set<Entry<Integer, Integer>> matches = matchOffsetPairs.entrySet();
+            Iterator<Entry<Integer, Integer>> iter = matches.iterator();
+            while (iter.hasNext()) {
+                Entry<Integer, Integer> entry = iter.next();
+                int match = entry.getKey();
+                int offset = entry.getValue();
+                bytes.add((long) byteAt(match, 4));
+                bytes.add((long) byteAt(match, 3));
+                bytes.add((long) byteAt(match, 2));
+                bytes.add((long) byteAt(match, 1));
+                bytes.add((long) byteAt(offset, 4));
+                bytes.add((long) byteAt(offset, 3));
+                bytes.add((long) byteAt(offset, 2));
+                bytes.add((long) byteAt(offset, 1));
+            }
+            break;
+        case GOTO_W:
+        case JSR_W:
+            bytes.add((long) byteAt(jumpToOffset, 4));
+            bytes.add((long) byteAt(jumpToOffset, 3));
+            bytes.add((long) byteAt(jumpToOffset, 2));
+            bytes.add((long) byteAt(jumpToOffset, 1));
+            break;
+        default:
+            bytes.add((long) byteAt(jumpToOffset, 2));
+            bytes.add((long) byteAt(jumpToOffset, 1));
+        }
+        return bytes;
+    }
 
 }
 
@@ -1244,6 +1484,12 @@ class CLLoadStoreInstruction extends CLInstruction {
      * LDC, LDC_W, LDC2_W instructions.
      */
     private int constVal;
+    
+    /**
+     * A byte (for BIPUSH), a short (for SIPUSH), or a constant pool index for
+     * LDC, LDC_W, LDC2_W instructions.
+     */
+    private long constLongVal;
 
     /**
      * Construct a CLLoadStoreInstruction object for LOAD_STORE1 instructions.
@@ -1310,6 +1556,29 @@ class CLLoadStoreInstruction extends CLInstruction {
         localVariableIndex = instructionInfo[opcode].localVariableIndex;
         this.constVal = constVal;
     }
+    
+    /**
+     * Construct a CLLoadStoreInstruction object for LOAD_STORE3 and LOAD_STORE4
+     * instructions.
+     * 
+     * @param opcode
+     *            the opcode for this instruction.
+     * @param pc
+     *            index of this instruction within the code array of a method.
+     * @param constVal
+     *            a byte (for BIPUSH), a short (for SIPUSH), or a constant pool
+     *            index for LDC instructions.
+     */
+
+    public CLLoadStoreInstruction(int opcode, int pc, long constLongVal) {
+        super.opcode = opcode;
+        super.pc = pc;
+        mnemonic = instructionInfo[opcode].mnemonic;
+        operandCount = instructionInfo[opcode].operandCount;
+        stackUnits = instructionInfo[opcode].stackUnits;
+        localVariableIndex = instructionInfo[opcode].localVariableIndex;
+        this.constLongVal = constLongVal;
+    }
 
     /**
      * @inheritDoc
@@ -1335,6 +1604,32 @@ class CLLoadStoreInstruction extends CLInstruction {
                 case LDC2_W:
                     bytes.add(byteAt(constVal, 2));
                     bytes.add(byteAt(constVal, 1));
+                }
+            }
+        }
+        return bytes;
+    }
+    
+    public ArrayList<Long> longToBytes() {
+        ArrayList<Long> bytes = new ArrayList<Long>();
+        bytes.add((long) opcode);
+        if (instructionInfo[opcode].operandCount > 0) {
+            if (localVariableIndex != IRRELEVANT) {
+                if (isWidened) {
+                    bytes.add((long) byteAt(localVariableIndex, 2));
+                }
+                bytes.add((long) byteAt(localVariableIndex, 1));
+            } else {
+                switch (opcode) {
+                case BIPUSH:
+                case LDC:
+                    bytes.add(byteAt(constLongVal, 1));
+                    break;
+                case SIPUSH:
+                case LDC_W:
+                case LDC2_W:
+                    bytes.add(byteAt(constLongVal, 2));
+                    bytes.add(byteAt(constLongVal, 1));
                 }
             }
         }
@@ -1376,6 +1671,16 @@ class CLStackInstruction extends CLInstruction {
         bytes.add(opcode);
         return bytes;
     }
+    
+    /**
+     * @inheritDoc
+     */
+
+    public ArrayList<Long> longToBytes() {
+        ArrayList<Long> bytes = new ArrayList<Long>();
+        bytes.add((long) opcode);
+        return bytes;
+    }
 
 }
 
@@ -1410,6 +1715,16 @@ class CLMiscInstruction extends CLInstruction {
     public ArrayList<Integer> toBytes() {
         ArrayList<Integer> bytes = new ArrayList<Integer>();
         bytes.add(opcode);
+        return bytes;
+    }
+    
+    /**
+     * @inheritDoc
+     */
+
+    public ArrayList<Long> longToBytes() {
+        ArrayList<Long> bytes = new ArrayList<Long>();
+        bytes.add((long) opcode);
         return bytes;
     }
 
