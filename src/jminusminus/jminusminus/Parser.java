@@ -1140,7 +1140,9 @@ public class Parser {
             if (have(STAR)) {
                 lhs = new JMultiplyOp(line, lhs, unaryExpression());
             } else if (have(DIVISION)) {
-                lhs = new JMultiplyOp(line, lhs, unaryExpression());
+                lhs = new JDivideOP(line, lhs, unaryExpression());
+            } else if (have(MODULUS)) {
+                lhs = new JModOP(line, lhs, unaryExpression());
             } else {
                 more = false;
             }

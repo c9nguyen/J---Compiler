@@ -8,14 +8,16 @@ public class project2_parser {
 	
 	static public void testing() {
 		int a  = 1l;
-		
-		float b = 310.0f;
-		
-		double c = 4.5;
-		
-		long d = 2l;
+//		
+//		float b = 310.0f;
+//		
+//		double c = 4.5;
+//		
+//		long d = 2l;
 		
 		a = 1 / 2;
+		
+		a = 2 % 3;
 	}
 
 }
