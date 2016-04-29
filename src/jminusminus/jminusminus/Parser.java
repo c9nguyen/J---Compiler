@@ -1022,8 +1022,8 @@ public class Parser {
      * Parse a conditional-and expression.
      * 
      * <pre>
-     *   conditionalAndExpression ::= equalityExpression // level 10
-     *                                  {LAND equalityExpression}
+     *   conditionalAndExpression ::= xorExpression // level 10
+     *                                  {xorExpression}
      * </pre>
      * 
      * @return an AST for a conditionalExpression.
@@ -1032,10 +1032,10 @@ public class Parser {
     private JExpression conditionalAndExpression() {
         int line = scanner.token().line();
         boolean more = true;
-        JExpression lhs = equalityExpression();
+        JExpression lhs = xorExpression();
         while (more) {
             if (have(LAND)) {
-                lhs = new JLogicalAndOp(line, lhs, equalityExpression());
+                lhs = new JLogicalAndOp(line, lhs, xorExpression());
             } else {
                 more = false;
             }
@@ -1061,6 +1061,8 @@ public class Parser {
         while (more) {
             if (have(EQUAL)) {
                 lhs = new JEqualOp(line, lhs, relationalExpression());
+            } else if (have(NOT_EQUAL)) {
+                lhs = new JNotEqualOp(line, lhs, relationalExpression());
             } else {
                 more = false;
             }
@@ -1082,11 +1084,15 @@ public class Parser {
 
     private JExpression relationalExpression() {
         int line = scanner.token().line();
-        JExpression lhs = additiveExpression();
+        JExpression lhs = shiftExpression();
         if (have(GT)) {
-            return new JGreaterThanOp(line, lhs, additiveExpression());
+            return new JGreaterThanOp(line, lhs, shiftExpression());
+        } else if (have(LESS)) {
+            return new JLesserThanOp(line, lhs, shiftExpression());
         } else if (have(LE)) {
-            return new JLessEqualOp(line, lhs, additiveExpression());
+            return new JLessEqualOp(line, lhs, shiftExpression());
+        } else if (have(GTE)) {
+            return new JGTEqualOp(line, lhs, shiftExpression());
         } else if (have(INSTANCEOF)) {
             return new JInstanceOfOp(line, lhs, referenceType());
         } else {
@@ -1135,20 +1141,123 @@ public class Parser {
     private JExpression multiplicativeExpression() {
         int line = scanner.token().line();
         boolean more = true;
-        JExpression lhs = unaryExpression();
+        JExpression lhs = bitwiseUnaryExpression();
         while (more) {
             if (have(STAR)) {
-                lhs = new JMultiplyOp(line, lhs, unaryExpression());
+                lhs = new JMultiplyOp(line, lhs, bitwiseUnaryExpression());
             } else if (have(DIVISION)) {
-                lhs = new JDivideOP(line, lhs, unaryExpression());
+                lhs = new JDivideOP(line, lhs, bitwiseUnaryExpression());
             } else if (have(MODULUS)) {
-                lhs = new JModOP(line, lhs, unaryExpression());
+                lhs = new JModOP(line, lhs, bitwiseUnaryExpression());
             } else {
                 more = false;
             }
         }
         return lhs;
     }
+    
+    /**
+     * Parse a bitwise expression.
+     * 
+     * <pre>
+     * </pre>
+     * 
+     * @return an AST for a bitwiseExpression.
+     */
+
+    private JExpression shiftExpression() {
+        int line = scanner.token().line();
+        boolean more = true;
+        JExpression lhs = additiveExpression();
+        while (more) {
+        	if (have(LEFT_SHIFT)) {
+                lhs = new JLeftSOP(line, lhs, additiveExpression());
+            } else if (have(RIGHT_SHIFT)) {
+                lhs = new JRightSOP(line, lhs, additiveExpression());
+            } else if (have(ZERO_RIGHT_SHIFT)) {
+                lhs = new JZeroSOP(line, lhs, additiveExpression());
+            } else {
+                more = false;
+            }
+        }
+        return lhs;
+    }
+    
+    /**
+     * Parse a bitwise expression.
+     * 
+     * <pre>
+     *   andExpression ::= equalityExpression  // level 
+     *                                
+     * </pre>
+     * 
+     * @return an AST for a bitwiseExpression.
+     */
+
+    private JExpression andExpression() {
+        int line = scanner.token().line();
+        boolean more = true;
+        JExpression lhs = equalityExpression();
+        while (more) {
+            if (have(BITAND)) {
+                lhs = new JAndOP(line, lhs, equalityExpression());
+            } else {
+                more = false;
+            }
+        }
+        return lhs;
+    }
+    
+    /**
+     * Parse a OR expression.
+     * 
+     * <pre>
+     *   orExpression ::= andExpression  // level 
+     *       
+     * </pre>
+     * 
+     * @return an AST for a bitwiseExpression.
+     */
+
+    private JExpression orExpression() {
+        int line = scanner.token().line();
+        boolean more = true;
+        JExpression lhs = andExpression();
+        while (more) {
+            if (have(BITOR)) {
+                lhs = new JOrOP(line, lhs, andExpression());
+            } else {
+                more = false;
+            }
+        }
+        return lhs;
+    }
+    
+    /**
+     * Parse a XOR expression.
+     * 
+     * <pre>
+     *   xorExpression ::= orExpression  // level 
+     *       
+     * </pre>
+     * 
+     * @return an AST for a bitwiseExpression.
+     */
+
+    private JExpression xorExpression() {
+        int line = scanner.token().line();
+        boolean more = true;
+        JExpression lhs = orExpression();
+        while (more) {
+        	if (have(BITXOR)) {
+                lhs = new JXorOP(line, lhs, orExpression());
+            } else {
+                more = false;
+            }
+        }
+        return lhs;
+    }
+
 
     /**
      * Parse an unary expression.
@@ -1205,6 +1314,30 @@ public class Parser {
             return postfixExpression();
         }
     }
+    
+    /**
+     * Parse a bitwise unary expression.
+     * 
+     * <pre>
+     * </pre>
+     * 
+     * @return an AST for a simpleUnaryExpression.
+     */
+
+    private JExpression bitwiseUnaryExpression() {
+    	int line = scanner.token().line();
+        boolean more = true;
+        JExpression lhs = simpleUnaryExpression();
+        while (more) {
+        	if (have(BITCOM)) {
+                lhs = new JComOP(line, lhs, unaryExpression());
+            } else {
+                more = false;
+            }
+        }
+        return lhs;
+    }
+    
 
     /**
      * Parse a postfix expression.

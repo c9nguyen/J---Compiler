@@ -13,11 +13,14 @@ public class HelloWorld {
 
     public static void main(String[] args) {
         System.out.println(HelloWorld.message());
-     	//success
-        success();
-  
-     	//fail
-     	fail();
+        
+        2 != 3;
+        
+//     	//success
+//        success();
+//  
+//     	//fail
+//     	fail();
     }
     
     static void success() {
