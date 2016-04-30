@@ -1008,16 +1008,85 @@ public class Parser {
 
     private JExpression assignmentExpression() {
         int line = scanner.token().line();
-        JExpression lhs = conditionalAndExpression();
+        JExpression lhs = conditionalOrExpression();
         if (have(ASSIGN)) {
-            return new JAssignOp(line, lhs, assignmentExpression());
+            return new JAssignOp(line, lhs, conditionalOrExpression());
         } else if (have(PLUS_ASSIGN)) {
-            return new JPlusAssignOp(line, lhs, assignmentExpression());
+            return new JPlusAssignOp(line, lhs, conditionalOrExpression());
+        } else if (have(MINUS_ASSIGN)) {
+            return new JMinusAssignOp(line, lhs, conditionalOrExpression());
+        } else if (have(MULTIPLY_ASSIGN)) {
+            return new JMultiplyAssignOp(line, lhs, conditionalOrExpression());
+        } else if (have(DIVISION_ASSIGN)) {
+            return new JDivisionAssignOp(line, lhs, conditionalOrExpression());      
+        } else if (have(MOD_ASSIGN)) {
+            return new JModulusAssignOp(line, lhs, conditionalOrExpression());
+        } else if (have(LS_ASSIGN)) {
+            return new JLSAssignOp(line, lhs, conditionalOrExpression());
+        } else if (have(RS_ASSIGN)) {
+            return new JRSAssignOp(line, lhs, conditionalOrExpression());
+        } else if (have(AND_ASSIGN)) {
+            return new JAndAssignOp(line, lhs, conditionalOrExpression());
+        } else if (have(XOR_ASSIGN)) {
+            return new JXOrAssignOp(line, lhs, conditionalOrExpression());
+        } else if (have(OR_ASSIGN)) {
+            return new JOrAssignOp(line, lhs, conditionalOrExpression());
         } else {
             return lhs;
         }
     }
+    
+    /**
+     * Parse a conditional expression.
+     * 
+     * <pre>
+     *   conditionalOrExpression ::= conditionalAndExpression // level 10
+     *                                  {conditionalAndExpression}
+     * </pre>
+     * 
+     * @return an AST for a conditionalExpression.
+     */
 
+    private JExpression conditionalExpression() {
+        int line = scanner.token().line();
+        boolean more = true;
+        JExpression lhs = conditionalOrExpression();
+        while (more) {
+            if (have(TERNARY_HEAD)) {
+            	
+                lhs = new JLogicalOrOp(line, lhs, conditionalOrExpression());
+            } else {
+                more = false;
+            }
+        }
+        return lhs;
+    }
+    
+    /**
+     * Parse a conditional-or expression.
+     * 
+     * <pre>
+     *   conditionalOrExpression ::= conditionalAndExpression // level 10
+     *                                  {conditionalAndExpression}
+     * </pre>
+     * 
+     * @return an AST for a conditionalExpression.
+     */
+
+    private JExpression conditionalOrExpression() {
+        int line = scanner.token().line();
+        boolean more = true;
+        JExpression lhs = conditionalAndExpression();
+        while (more) {
+            if (have(LOR)) {
+                lhs = new JLogicalOrOp(line, lhs, conditionalAndExpression());
+            } else {
+                more = false;
+            }
+        }
+        return lhs;
+    }
+    
     /**
      * Parse a conditional-and expression.
      * 
@@ -1558,10 +1627,12 @@ public class Parser {
             return new JLiteralString(line, scanner.previousToken().image());
         } else if (have(FLOAT_LITERAL)) {
             return new JLiteralFloat(line, scanner.previousToken().image());
-        } else if (have(TRUE)) {
-            return new JLiteralTrue(line);
-        } else if (have(FALSE)) {
-            return new JLiteralFalse(line);
+        } else if (have(BOOLEAN_LITERAL)) {
+        	
+        	if (scanner.previousToken().image().equals("true"))
+        		return new JLiteralTrue(line);
+        	else 
+        		return new JLiteralFalse(line);
         } else if (have(NULL)) {
             return new JLiteralNull(line);
         } else {
