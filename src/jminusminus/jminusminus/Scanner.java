@@ -299,7 +299,10 @@ class Scanner {
 					nextCh();
 					return new TokenInfo(ZERO_RIGHT_SHIFT, line);
 				}
-				else if (ch == '=') return new TokenInfo(RS_ASSIGN, line);
+				else if (ch == '='){
+					nextCh();
+					return new TokenInfo(RS_ASSIGN, line);
+				}
 				else return new TokenInfo(RIGHT_SHIFT, line);
 			} else {
 				nextCh();
@@ -312,7 +315,10 @@ class Scanner {
 				return new TokenInfo(LE, line);
 			} else if (ch == '<') {
 				nextCh();
-				if (ch == '=') return new TokenInfo(LS_ASSIGN, line);
+				if (ch == '='){
+					nextCh();
+					return new TokenInfo(LS_ASSIGN, line);
+				}
 				else return new TokenInfo(TokenKind.LEFT_SHIFT, line);
 			} else {
 				nextCh();

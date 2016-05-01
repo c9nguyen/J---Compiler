@@ -9,7 +9,7 @@ import static jminusminus.CLConstants.*;
  * two operands: a lhs and a rhs.
  */
 
-abstract class JConditionExpression extends JExpression {
+public class JConditionExpression extends JExpression {
 
     /** The lhs operand. */
     protected JExpression lhs;
@@ -68,32 +68,7 @@ abstract class JConditionExpression extends JExpression {
         p.indentLeft();
         p.printf("</JBinaryExpression>\n");
     }
-
-}
-
-/**
- * The AST node for a plus (+) expression. In j--, as in Java, + is overloaded
- * to denote addition for numbers and concatenation for Strings.
- */
-
-class JPlusOp extends JConditionExpression {
-
-    /**
-     * Construct an AST node for an addition expression given its line number,
-     * and the lhs and rhs operands.
-     * 
-     * @param line
-     *            line in which the addition expression occurs in the source
-     *            file.
-     * @param lhs
-     *            the lhs operand.
-     * @param rhs
-     *            the rhs operand.
-     */
-
-    public JPlusOp(int line, JExpression lhs, JExpression ms, JExpression rhs) {
-        super(line, lhs, ms, rhs);
-    }
+    
 
     /**
      * Analysis involves first analyzing the operands. If this is a string
@@ -108,6 +83,7 @@ class JPlusOp extends JConditionExpression {
 
     public JExpression analyze(Context context) {
         lhs = (JExpression) lhs.analyze(context);
+        ms = (JExpression) ms.analyze(context);
         rhs = (JExpression) rhs.analyze(context);
         if (lhs.type() == Type.STRING || rhs.type() == Type.STRING) {
             return (new JStringConcatenationOp(line, lhs, rhs))
@@ -141,4 +117,31 @@ class JPlusOp extends JConditionExpression {
         }
     }
 
+
 }
+
+///**
+// * The AST node for a plus (+) expression. In j--, as in Java, + is overloaded
+// * to denote addition for numbers and concatenation for Strings.
+// */
+//
+//class JPlusOp extends JConditionExpression {
+//
+//    /**
+//     * Construct an AST node for an addition expression given its line number,
+//     * and the lhs and rhs operands.
+//     * 
+//     * @param line
+//     *            line in which the addition expression occurs in the source
+//     *            file.
+//     * @param lhs
+//     *            the lhs operand.
+//     * @param rhs
+//     *            the rhs operand.
+//     */
+//
+//    public JPlusOp(int line, JExpression lhs, JExpression ms, JExpression rhs) {
+//        super(line, lhs, ms, rhs);
+//    }
+//
+//}

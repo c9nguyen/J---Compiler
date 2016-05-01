@@ -1008,29 +1008,29 @@ public class Parser {
 
     private JExpression assignmentExpression() {
         int line = scanner.token().line();
-        JExpression lhs = conditionalOrExpression();
+        JExpression lhs = conditionalExpression();
         if (have(ASSIGN)) {
-            return new JAssignOp(line, lhs, conditionalOrExpression());
+            return new JAssignOp(line, lhs, conditionalExpression());
         } else if (have(PLUS_ASSIGN)) {
-            return new JPlusAssignOp(line, lhs, conditionalOrExpression());
+            return new JPlusAssignOp(line, lhs, conditionalExpression());
         } else if (have(MINUS_ASSIGN)) {
-            return new JMinusAssignOp(line, lhs, conditionalOrExpression());
+            return new JMinusAssignOp(line, lhs, conditionalExpression());
         } else if (have(MULTIPLY_ASSIGN)) {
-            return new JMultiplyAssignOp(line, lhs, conditionalOrExpression());
+            return new JMultiplyAssignOp(line, lhs, conditionalExpression());
         } else if (have(DIVISION_ASSIGN)) {
-            return new JDivisionAssignOp(line, lhs, conditionalOrExpression());      
+            return new JDivisionAssignOp(line, lhs, conditionalExpression());      
         } else if (have(MOD_ASSIGN)) {
-            return new JModulusAssignOp(line, lhs, conditionalOrExpression());
+            return new JModulusAssignOp(line, lhs, conditionalExpression());
         } else if (have(LS_ASSIGN)) {
-            return new JLSAssignOp(line, lhs, conditionalOrExpression());
+            return new JLSAssignOp(line, lhs, conditionalExpression());
         } else if (have(RS_ASSIGN)) {
-            return new JRSAssignOp(line, lhs, conditionalOrExpression());
+            return new JRSAssignOp(line, lhs, conditionalExpression());
         } else if (have(AND_ASSIGN)) {
-            return new JAndAssignOp(line, lhs, conditionalOrExpression());
+            return new JAndAssignOp(line, lhs, conditionalExpression());
         } else if (have(XOR_ASSIGN)) {
-            return new JXOrAssignOp(line, lhs, conditionalOrExpression());
+            return new JXOrAssignOp(line, lhs, conditionalExpression());
         } else if (have(OR_ASSIGN)) {
-            return new JOrAssignOp(line, lhs, conditionalOrExpression());
+            return new JOrAssignOp(line, lhs, conditionalExpression());
         } else {
             return lhs;
         }
@@ -1049,16 +1049,18 @@ public class Parser {
 
     private JExpression conditionalExpression() {
         int line = scanner.token().line();
-        boolean more = true;
         JExpression lhs = conditionalOrExpression();
-        while (more) {
-            if (have(TERNARY_HEAD)) {
-            	
-                lhs = new JLogicalOrOp(line, lhs, conditionalOrExpression());
-            } else {
-                more = false;
-            }
-        }
+
+        if (have(TERNARY_HEAD)) {
+        	JExpression ms = conditionalOrExpression();
+
+        	if (have(TERNARY_END)) {
+        		lhs = new JConditionExpression(line, lhs, ms, conditionalOrExpression());
+        	} else {
+        		reportParserError("Syntax error, insert \": Expression\" to complete Expression");
+        	}
+        } 
+        
         return lhs;
     }
     
