@@ -7,7 +7,8 @@ public class project2_parser {
 	}
 	
 	static public void testing() {
-//		int a  = 1l;
+
+		int a  = 1l;
 //		
 //		float b = 310.0f;
 //		
@@ -19,7 +20,7 @@ public class project2_parser {
 //		
 //		a = 2 % 3;
 //		
-		boolean d = 3 > 4;
+//		boolean d = 3 > 4;
 //		
 //		d = 4 < 5;
 //		
@@ -67,7 +68,19 @@ public class project2_parser {
 //		
 //		a |= 25;
 		
-		a = a < 26 ? 27 : 28;
+//		a = a < 26 ? 27 : 28;
+		
+		if (a < 29) {
+			a++;
+		}
+		
+		while (a < 29) {
+			int b = 2;
+		}
+		
+		for (a = 30; a < 31;) {
+			a++;
+		}
 	}
 
 }

@@ -654,6 +654,29 @@ public class Parser {
             JExpression test = parExpression();
             JStatement statement = statement();
             return new JWhileStatement(line, test, statement);
+        } else if (have(FOR)) {
+            mustBe(LPAREN);
+            JExpression initExpr = expression();
+            if (have(SEMI)) {
+            	JExpression condition = expression();
+            	mustBe(SEMI);
+            	JExpression after;
+            	if (have(RPAREN)) {
+            		after = null;
+            	} else {
+            		after = expression();
+            		mustBe(RPAREN);
+            	}
+            	
+            	return new JTraditionForStatement(line, initExpr, condition, after, statement());
+            } else if (have(TERNARY_END)) {
+            	JExpression collection = expression();
+            	mustBe(RPAREN);
+            	return new JEnhancedForStatement(line, initExpr, collection, statement());
+            } else {
+            	reportParserError("Syntax error, insert \"; ; ) Statement\" to complete ForStatement");
+            	return initExpr;
+            }   
         } else if (have(RETURN)) {
             if (have(SEMI)) {
                 return new JReturnStatement(line, null);
@@ -964,6 +987,7 @@ public class Parser {
         JExpression expr = expression();
         if (expr instanceof JAssignment || expr instanceof JPreIncrementOp
                 || expr instanceof JPostDecrementOp
+                || expr instanceof JPostIncrementOp
                 || expr instanceof JMessageExpression
                 || expr instanceof JSuperConstruction
                 || expr instanceof JThisConstruction || expr instanceof JNewOp
@@ -1398,7 +1422,7 @@ public class Parser {
     private JExpression bitwiseUnaryExpression() {
     	int line = scanner.token().line();
         boolean more = true;
-        JExpression lhs = simpleUnaryExpression();
+        JExpression lhs = unaryExpression();
         while (more) {
         	if (have(BITCOM)) {
                 lhs = new JComOP(line, lhs, unaryExpression());
@@ -1426,8 +1450,11 @@ public class Parser {
         while (see(DOT) || see(LBRACK)) {
             primaryExpr = selector(primaryExpr);
         }
-        while (have(DEC)) {
+        
+        if (have(DEC)) {
             primaryExpr = new JPostDecrementOp(line, primaryExpr);
+        } else if(have(INC)) {
+        	  primaryExpr = new JPostIncrementOp(line, primaryExpr);
         }
         return primaryExpr;
     }
@@ -1629,8 +1656,7 @@ public class Parser {
             return new JLiteralString(line, scanner.previousToken().image());
         } else if (have(FLOAT_LITERAL)) {
             return new JLiteralFloat(line, scanner.previousToken().image());
-        } else if (have(BOOLEAN_LITERAL)) {
-        	
+        } else if (have(BOOLEAN_LITERAL)) { 	
         	if (scanner.previousToken().image().equals("true"))
         		return new JLiteralTrue(line);
         	else 
