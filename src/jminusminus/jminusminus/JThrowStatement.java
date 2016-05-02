@@ -10,7 +10,7 @@ package jminusminus;
 class JThrowStatement extends JStatement {
 
     /** The expression. */
-	JVariableDeclarator expr;
+	JExpression expr;
 
     /**
      * Construct an AST node for a statement expression given its line number,
@@ -22,7 +22,7 @@ class JThrowStatement extends JStatement {
      *            the expression.
      */
 
-    public JThrowStatement(int line, JVariableDeclarator expr) {
+    public JThrowStatement(int line, JExpression expr) {
         super(line);
         this.expr = expr;
     }
@@ -59,11 +59,11 @@ class JThrowStatement extends JStatement {
      */
 
     public void writeToStdOut(PrettyPrinter p) {
-        p.printf("<JThrowStatementException line=\"%d\">\n", line());
+        p.printf("<JThrowException line=\"%d\">\n", line());
         p.indentRight();
         expr.writeToStdOut(p);
         p.indentLeft();
-        p.printf("</JThrowStatementException>\n");
+        p.printf("</JThrowException>\n");
     }
 
 }

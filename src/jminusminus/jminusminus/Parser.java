@@ -776,8 +776,8 @@ public class Parser {
         } else if (have(SEMI)) {
             return new JEmptyStatement(line);
         } else if (have(THROW)) {
-        	Type typee = type();
-        	return new JThrowStatement(line, variableDeclarator(typee));
+//        	Type typee = type();
+        	return new JThrowStatement(line, expression());
 
         } else { // Must be a statementExpression
             JStatement statement = statementExpression();
@@ -1078,12 +1078,15 @@ public class Parser {
         int line = scanner.token().line();
         JExpression expr = expression();
         if (expr instanceof JAssignment || expr instanceof JPreIncrementOp
+        		|| expr instanceof JPreDecrementOp
                 || expr instanceof JPostDecrementOp
                 || expr instanceof JPostIncrementOp
                 || expr instanceof JMessageExpression
                 || expr instanceof JSuperConstruction
                 || expr instanceof JThisConstruction || expr instanceof JNewOp
-                || expr instanceof JNewArrayOp) {
+                || expr instanceof JNewArrayOp
+                || expr instanceof JNegateOp
+                || expr instanceof JPositiveOp) {
             // So as not to save on stack
             expr.isStatementExpression = true;
         } else {
@@ -1462,6 +1465,10 @@ public class Parser {
         int line = scanner.token().line();
         if (have(INC)) {
             return new JPreIncrementOp(line, unaryExpression());
+        } else if (have(DEC)) {
+        	return new JPreDecrementOp(line, unaryExpression());
+        } else if (have(PLUS)) {
+        	return new JPositiveOp(line, unaryExpression());
         } else if (have(MINUS)) {
             return new JNegateOp(line, unaryExpression());
         } else {

@@ -20,7 +20,7 @@ public class project2_parser {
 //		
 //		a = 2 % 3;
 //		
-//		boolean d = 3 > 4;
+		boolean d = 3 > 4;
 //		
 //		d = 4 < 5;
 //		
@@ -108,14 +108,15 @@ public class project2_parser {
 //			a = 37;
 //		}
 //		
-		try {
-			a = 38;
-		} catch (Exception e) {
-			a = 39;
-			throw e;
-		} finally {
-			a = 40;
-		}
+//		try {
+//			a = 38;
+//		} catch (Exception e) {
+//			a = 39;
+//			throw e;
+//		} finally {
+//			a = 40;
+//		}
+//
 		
 		
 	}
