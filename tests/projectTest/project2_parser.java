@@ -6,7 +6,7 @@ public class project2_parser {
 		testing();
 	}
 	
-	static public void testing() {
+	static public void testing() throws ExceptionName, IOException {
 
 		int a  = 1l;
 //		
@@ -101,19 +101,22 @@ public class project2_parser {
 //			a++;
 //			break;
 //		}
-		
-		try {
-			a = 36;
-		} catch (Exception e) {
-			a = 37;
-		}
-		
+//		
+//		try {
+//			a = 36;
+//		} catch (Exception e) {
+//			a = 37;
+//		}
+//		
 		try {
 			a = 38;
 		} catch (Exception e) {
 			a = 39;
+			throw e;
 		} finally {
 			a = 40;
 		}
+		
+		
 	}
 }

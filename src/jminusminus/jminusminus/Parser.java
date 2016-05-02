@@ -562,19 +562,42 @@ public class Parser {
                 mustBe(IDENTIFIER);
                 String name = scanner.previousToken().image();
                 ArrayList<JFormalParameter> params = formalParameters();
+
+                ArrayList<Type> exceptions = null; 
+                if (have(THROWS)) {
+                	exceptions = new ArrayList<Type>();              	
+                	boolean more = true;              	
+                	while(more) {
+                		exceptions.add(qualifiedIdentifier());
+                		if (!have(COMMA))
+                			more = false;
+                	} 
+                }
+
                 JBlock body = have(SEMI) ? null : block();
                 memberDecl = new JMethodDeclaration(line, mods, name, type,
-                        params, body);
+                		params, exceptions, body);
             } else {
-                type = type();
-                if (seeIdentLParen()) {
-                    // Non void method
-                    mustBe(IDENTIFIER);
-                    String name = scanner.previousToken().image();
-                    ArrayList<JFormalParameter> params = formalParameters();
+            	type = type();
+            	if (seeIdentLParen()) {
+            		// Non void method
+            		mustBe(IDENTIFIER);
+            		String name = scanner.previousToken().image();
+            		ArrayList<JFormalParameter> params = formalParameters();                 
+            		ArrayList<Type> exceptions = null; 
+            		if (have(THROWS)) {
+            			exceptions = new ArrayList<Type>();
+            			boolean more = true;
+            			while(more) {
+            				exceptions.add(qualifiedIdentifier());
+            				if (!have(COMMA))
+            					more = false;
+            			} 
+            		}
+
                     JBlock body = have(SEMI) ? null : block();
                     memberDecl = new JMethodDeclaration(line, mods, name, type,
-                            params, body);
+                            params, exceptions, body);
                 } else {
                     // Field
                     memberDecl = new JFieldDeclaration(line, mods,
@@ -585,6 +608,7 @@ public class Parser {
         }
         return memberDecl;
     }
+
 
     /**
      * Parse a block.
@@ -751,6 +775,10 @@ public class Parser {
             }
         } else if (have(SEMI)) {
             return new JEmptyStatement(line);
+        } else if (have(THROW)) {
+        	Type typee = type();
+        	return new JThrowStatement(line, variableDeclarator(typee));
+
         } else { // Must be a statementExpression
             JStatement statement = statementExpression();
             mustBe(SEMI);

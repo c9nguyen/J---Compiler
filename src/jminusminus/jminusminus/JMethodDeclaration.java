@@ -41,6 +41,9 @@ class JMethodDeclaration
 
     /** Is method private. */
     protected boolean isPrivate;
+    
+    /** List of exception to throw */
+    protected ArrayList<Type> exceptions;
 
     /**
      * Construct an AST node for a method declaration given the
@@ -64,7 +67,7 @@ class JMethodDeclaration
 
     public JMethodDeclaration(int line, ArrayList<String> mods,
         String name, Type returnType,
-        ArrayList<JFormalParameter> params, JBlock body)
+        ArrayList<JFormalParameter> params, ArrayList<Type> exceptions, JBlock body)
 
     {
         super(line);
@@ -76,6 +79,7 @@ class JMethodDeclaration
         this.isAbstract = mods.contains("abstract");
         this.isStatic = mods.contains("static");
         this.isPrivate = mods.contains("private");
+        this.exceptions = exceptions;
     }
 
     /**
@@ -244,6 +248,17 @@ class JMethodDeclaration
             }
             p.println("</FormalParameters>");
         }
+        if (exceptions != null) {
+        	 p.println("<Throws>");
+             p.indentRight();
+             
+             for (Type t : exceptions) {
+            	 p.printf("Exception name=\"%s\"/>\n", t);
+             }
+             p.indentLeft();
+             p.println("</Throws>");
+        }
+        
         if (body != null) {
             p.println("<Body>");
             p.indentRight();
