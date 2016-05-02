@@ -656,7 +656,6 @@ public class Parser {
             return new JWhileStatement(line, test, statement);
         } else if (have(FOR)) {
             mustBe(LPAREN);
-<<<<<<< HEAD
             JVariableDeclaration initVar;
             if  (seeLocalVariableDeclaration()) {            
                 ArrayList<String> mods = new ArrayList<String>();
@@ -684,33 +683,25 @@ public class Parser {
             		reportParserError("Syntax error, insert \"; ; ) Statement\" to complete ForStatement");
             		return null;
             	}
+//            } else if (have(SWITCH)) {
+//            
+//                JExpression test = parExpression();
+////                JStatement consequent = statement();
+////                JStatement alternate = have(ELSE) ? statement() : null;
+//                ArrayList<JExpression> cases = new ArrayList<JExpression>();
+//                while (have(CASE)) {
+//                	JExpression literal = literal();
+//                	mustBe(TERNARY_END);
+//                	while(!have(BREAK)) {
+//                		
+//                	}
+//                }
+//                
+//                return new JIfStatement(line, test, consequent, alternate);
             } else {
             	reportParserError("Syntax error on token \"(\", ; expected after this token");
             	return null;
             }
-=======
-            JExpression initExpr = expression();
-            if (have(SEMI)) {
-            	JExpression condition = expression();
-            	mustBe(SEMI);
-            	JExpression after;
-            	if (have(RPAREN)) {
-            		after = null;
-            	} else {
-            		after = expression();
-            		mustBe(RPAREN);
-            	}
-            	
-            	return new JTraditionForStatement(line, initExpr, condition, after, statement());
-            } else if (have(TERNARY_END)) {
-            	JExpression collection = expression();
-            	mustBe(RPAREN);
-            	return new JEnhancedForStatement(line, initExpr, collection, statement());
-            } else {
-            	reportParserError("Syntax error, insert \"; ; ) Statement\" to complete ForStatement");
-            	return initExpr;
-            }   
->>>>>>> a6dbeab3d6b61d4f2e582c608e8381d5448af169
         } else if (have(RETURN)) {
             if (have(SEMI)) {
                 return new JReturnStatement(line, null);
