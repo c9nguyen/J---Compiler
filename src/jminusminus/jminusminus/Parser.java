@@ -683,28 +683,67 @@ public class Parser {
             		reportParserError("Syntax error, insert \"; ; ) Statement\" to complete ForStatement");
             		return null;
             	}
-//            } else if (have(SWITCH)) {
-//            
-//                JExpression test = parExpression();
-////                JStatement consequent = statement();
-////                JStatement alternate = have(ELSE) ? statement() : null;
-//                ArrayList<JExpression> cases = new ArrayList<JExpression>();
-//                while (have(CASE)) {
-//                	JExpression literal = literal();
-//                	mustBe(TERNARY_END);
-//                	while(!have(BREAK)) {
-//                		
-//                	}
-//                }
-//                
-//                return new JIfStatement(line, test, consequent, alternate);
             } else {
-            	reportParserError("Syntax error on token \"(\", ; expected after this token");
-            	return null;
+            	reportParserError("Syntax error, invalid assignmentOperator");
+        		return null;
             }
-        } else if (have(RETURN)) {
-            if (have(SEMI)) {
-                return new JReturnStatement(line, null);
+        } else if (have(SWITCH)) {     
+        	JExpression test = parExpression();
+        	ArrayList<JExpression> literals = new ArrayList<JExpression>();
+                ArrayList<JBlock> blocks = new ArrayList<JBlock>();
+                mustBe(LCURLY);
+                while (have(CASE)) {
+                	int blockLine = scanner.token().line();
+                	literals.add(literal());
+                  	mustBe(TERNARY_END);
+                    ArrayList<JStatement> statements = new ArrayList<JStatement>();
+                	while(!have(BREAK)) {
+                		statements.add(blockStatement());
+                	}
+                	mustBe(SEMI);
+                	blocks.add(new JBlock(blockLine, statements));
+                }
+                
+                if (have(DEFAULT)) {
+                	mustBe(TERNARY_END);
+                	int blockLine = scanner.token().line();
+                	 ArrayList<JStatement> statements = new ArrayList<JStatement>();
+                	while(!have(BREAK)) {
+                		statements.add(blockStatement());
+                	}
+                	mustBe(SEMI);
+                   	blocks.add(new JBlock(blockLine, statements));
+                }
+                mustBe(RCURLY);
+                return new JSwitchStatement(line, test, literals, blocks);
+        } else if (have(TRY)){
+        	JStatement tryStatement = statement();
+        	
+        	ArrayList<JVariableDeclarator> exceptions = new ArrayList<JVariableDeclarator>();
+        	ArrayList<JStatement> catchStatements = new ArrayList<JStatement>();
+        	
+        	mustBe(CATCH);
+        	mustBe(LPAREN);
+        	exceptions.add(variableDeclarator(type()));
+        	mustBe(RPAREN);
+        	catchStatements.add(statement());
+
+
+        	
+        	while (have(CATCH)) {
+            	exceptions.add(variableDeclarator(type()));
+            	catchStatements.add(statement());
+        	}
+        	
+        	if (have(FINALLY)) {
+        		return new JTryCatchStatement(line, tryStatement, exceptions, catchStatements, statement());
+        	} else {
+        		return new JTryCatchStatement(line, tryStatement, exceptions, catchStatements, null);
+        	}
+
+        }	else if (have(RETURN)) {
+        	if (have(SEMI)) {
+        		return new JReturnStatement(line, null);
             } else {
                 JExpression expr = expression();
                 mustBe(SEMI);

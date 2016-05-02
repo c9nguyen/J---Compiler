@@ -48,12 +48,10 @@ abstract class JForStatement extends JStatement {
 
 class JTraditionForStatement extends JForStatement {
 
-    /** Test expression. */
-<<<<<<< HEAD
+    /** Initial variable. */
+
     private JVariableDeclaration init;
-=======
-    private JExpression init;
->>>>>>> a6dbeab3d6b61d4f2e582c608e8381d5448af169
+
 	
     /** Test expression. */
     private JExpression condition;
@@ -75,12 +73,7 @@ class JTraditionForStatement extends JForStatement {
      * @param body
      *            the body.
      */
-
-<<<<<<< HEAD
     public JTraditionForStatement(int line, JVariableDeclaration init, JExpression condition,
-=======
-    public JTraditionForStatement(int line, JExpression init, JExpression condition,
->>>>>>> a6dbeab3d6b61d4f2e582c608e8381d5448af169
     		JExpression after, JStatement body) {
         super(line);
         this.init = init;
@@ -175,11 +168,8 @@ class JTraditionForStatement extends JForStatement {
 class JEnhancedForStatement extends JForStatement {
 
     /** Test expression. */
-<<<<<<< HEAD
     private JVariableDeclaration decla;
-=======
-    private JExpression decla;
->>>>>>> a6dbeab3d6b61d4f2e582c608e8381d5448af169
+
 	
     /** Test expression. */
     private JExpression collection;
@@ -199,11 +189,8 @@ class JEnhancedForStatement extends JForStatement {
      *            the body.
      */
 
-<<<<<<< HEAD
+
     public JEnhancedForStatement(int line, JVariableDeclaration decla, JExpression collection, JStatement body) {
-=======
-    public JEnhancedForStatement(int line, JExpression decla, JExpression collection, JStatement body) {
->>>>>>> a6dbeab3d6b61d4f2e582c608e8381d5448af169
         super(line);
         this.decla = decla;
         this.collection = collection;

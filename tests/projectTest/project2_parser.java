@@ -69,12 +69,6 @@ public class project2_parser {
 //		a |= 25;
 		
 //		a = a < 26 ? 27 : 28;
-		
-		if (a < 29) {
-			a++;
-			a--;
-			
-		}
 //		
 //		while (a < 29) {
 //			int b = 2;
@@ -83,13 +77,43 @@ public class project2_parser {
 //		for (a = 30; a < 31;) {
 //			a++;
 //		}
-		
+//		
 //		int[] e = new int[32];
 //
 //		for (int i : e) {
 //			i++;
-//
-//
 //		}
-
+//		
+//		switch (a) {
+//		case 33:
+//			a++;
+//			break;
+//		case 34:
+//			a++;
+//			break;
+//		}
+//		
+//		switch (a) {
+//		case 35:
+//			a++;
+//			break;
+//		default:
+//			a++;
+//			break;
+//		}
+		
+		try {
+			a = 36;
+		} catch (Exception e) {
+			a = 37;
+		}
+		
+		try {
+			a = 38;
+		} catch (Exception e) {
+			a = 39;
+		} finally {
+			a = 40;
+		}
+	}
 }
