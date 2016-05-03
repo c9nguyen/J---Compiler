@@ -15,6 +15,9 @@ class JFormalParameter extends JAST {
     /** Parameter type. */
     private Type type;
 
+    /** Last arity method */
+    private boolean arity;
+    
     /**
      * Construct an AST node for a formal parameter declaration given its line
      * number, name, and type.
@@ -27,10 +30,11 @@ class JFormalParameter extends JAST {
      *            parameter type.
      */
 
-    public JFormalParameter(int line, String name, Type type) {
+    public JFormalParameter(int line, String name, Type type, boolean arity) {
         super(line);
         this.name = name;
         this.type = type;
+this.arity = arity;
     }
 
     /**
@@ -95,9 +99,15 @@ class JFormalParameter extends JAST {
      */
 
     public void writeToStdOut(PrettyPrinter p) {
+    	if (!arity) {
         p.printf("<JFormalParameter line=\"%d\" name=\"%s\" "
                 + "type=\"%s\"/>\n", line(), name, (type == null) ? "" : type
                 .toString());
+    	} else {
+            p.printf("<JArityParameter line=\"%d\" name=\"%s\" "
+                    + "type=\"%s\"/>\n", line(), name, (type == null) ? "" : type
+                    .toString());
+    	}
     }
 
 }

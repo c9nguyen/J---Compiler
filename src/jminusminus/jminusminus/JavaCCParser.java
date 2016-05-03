@@ -691,7 +691,7 @@ class JavaCCParser implements JavaCCParserConstants {
     } catch (ParseException e) {
         recoverFromError( new int[] { SEMI, EOF }, e );
     }
-      {if (true) return new JFormalParameter( line, name, type );}
+      {if (true) return new JFormalParameter( line, name, type, false );}
     throw new Error("Missing return statement in function");
   }
 

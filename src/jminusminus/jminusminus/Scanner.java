@@ -111,6 +111,7 @@ class Scanner {
 		reserved.put(VOLATILE.image(), VOLATILE);
 		reserved.put(VOID.image(), VOID);
 		reserved.put(WHILE.image(), WHILE);
+		reserved.put(UNTIL.image(), UNTIL);
 
 
 		// Prime the pump.
@@ -380,7 +381,18 @@ class Scanner {
 			return new TokenInfo(STRING_LITERAL, buffer.toString(), line);
 		case '.':
 			nextCh();
-			return new TokenInfo(DOT, line);
+			if (ch == '.') {
+				nextCh();
+				if (ch == '.') {
+					nextCh();
+					return new TokenInfo(THREE_DOT, line);
+				} else {
+					reportScannerError("Syntax error on token \"%c\".", ch);
+					return new TokenInfo(DOT, line);
+				}
+			} else {
+				return new TokenInfo(DOT, line);
+			}
 		case EOFCH:
 			return new TokenInfo(EOF, line);
 		case '0':

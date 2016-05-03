@@ -557,7 +557,7 @@ public class Parser {
         } else {
             Type type = null;
             if (have(CLASS)) {
-            	return classDeclaration(mods);
+//            	return classDeclaration(mods);
             } else if (have(VOID)) {
                 // void method
                 type = Type.VOID;
@@ -767,13 +767,25 @@ public class Parser {
         		return new JTryCatchStatement(line, tryStatement, exceptions, catchStatements, null);
         	}
 
-        }	else if (have(RETURN)) {
+        } else if (have(DO)) {
+        	  JStatement statement = statement();    	  
+        	  if (have(WHILE)) {
+        		  JExpression test = parExpression();
+        		  return new JWhileStatement(line, test, statement);
+        	  } else if (have(UNTIL)) {
+        		  JExpression test = parExpression();
+        		  return new JUntilStatement(line, test, statement);
+        	  } else {
+        		  reportParserError("Syntax error, insert \"while ( Expression ) ;\" to complete DoStatement");
+        		  return null;
+        	  }
+        } else if (have(RETURN)) {
         	if (have(SEMI)) {
         		return new JReturnStatement(line, null);
-            } else {
-                JExpression expr = expression();
-                mustBe(SEMI);
-                return new JReturnStatement(line, expr);
+        	} else {
+        		JExpression expr = expression();
+        		mustBe(SEMI);
+        		return new JReturnStatement(line, expr);
             }
         } else if (have(SEMI)) {
             return new JEmptyStatement(line);
@@ -826,9 +838,14 @@ public class Parser {
     private JFormalParameter formalParameter() {
         int line = scanner.token().line();
         Type type = type();
+        boolean arity = false;
+        
+        if (have(THREE_DOT)) {          
+            arity = true;
+        }
         mustBe(IDENTIFIER);
         String name = scanner.previousToken().image();
-        return new JFormalParameter(line, name, type);
+        return new JFormalParameter(line, name, type, arity);
     }
 
     /**
