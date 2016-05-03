@@ -120,4 +120,8 @@ public class project2_parser {
 		
 		
 	}
+	
+	void doSomething(int a, int b, int c) {
+		
+	}
 }

@@ -556,7 +556,9 @@ public class Parser {
                     body);
         } else {
             Type type = null;
-            if (have(VOID)) {
+            if (have(CLASS)) {
+            	return classDeclaration(mods);
+            } else if (have(VOID)) {
                 // void method
                 type = Type.VOID;
                 mustBe(IDENTIFIER);
