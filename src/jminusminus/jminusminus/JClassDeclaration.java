@@ -257,6 +257,10 @@ class JClassDeclaration extends JAST implements JTypeDecl {
             codegenClassInit(output);
         }
     }
+    
+    public ArrayList<String> getMods() {
+    	return mods;
+    }
 
     /**
      * @inheritDoc

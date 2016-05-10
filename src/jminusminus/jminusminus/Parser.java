@@ -1044,7 +1044,6 @@ public class Parser {
         	return Type.DOUBLE;
         } else if (have(FLOAT)) {
         	Type a = Type.FLOAT;
-        	System.out.println(Type.FLOAT);
         	return a;
         } else {
             reportParserError("Type sought where %s found", scanner.token()

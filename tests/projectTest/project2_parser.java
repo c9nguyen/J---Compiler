@@ -6,7 +6,7 @@ public class project2_parser {
 		testing();
 	}
 	
-	static public void testing() throws ExceptionName, IOException {
+	public static void testing() throws ExceptionName, IOException {
 
 		int a  = 1l;
 		
@@ -74,8 +74,8 @@ public class project2_parser {
 			int b = 2;
 		}
 		
-		for (a = 30; a < 31;) {
-			a++;
+		for (int i = 30; i < 31; i++) {
+			i++;
 		}
 		
 		int[] e = new int[32];

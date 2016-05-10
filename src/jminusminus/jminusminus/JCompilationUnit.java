@@ -158,8 +158,22 @@ class JCompilationUnit extends JAST {
 
         // Declare the locally declared type(s)
         CLEmitter.initializeByteClassLoader();
+        boolean scannedPublic = false;
+        
         for (JAST typeDeclaration : typeDeclarations) {
             ((JTypeDecl) typeDeclaration).declareThisType(context);
+            
+            for (String mods : ((JClassDeclaration) typeDeclaration).getMods()) {
+            	if (mods.equals("public")) {
+            		if (scannedPublic) {
+            			JAST.compilationUnit.reportSemanticError(((JClassDeclaration) typeDeclaration).line,
+                                "Can't have more than 1 public class.");
+            		} else {
+            			scannedPublic = true;
+            		}
+            	}
+            }
+            
         }
 
         // Pre-analyze the locally declared type(s). Generate
