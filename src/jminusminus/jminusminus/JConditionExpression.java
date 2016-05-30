@@ -1,24 +1,22 @@
-// Copyright 2013 Bill Campbell, Swami Iyer and Bahar Akbal-Delibas
 
 package jminusminus;
 
 import static jminusminus.CLConstants.*;
 
 /**
- * The AST node for a binary expression. A binary expression has an operator and
- * two operands: a lhs and a rhs.
+ * The AST node for a conditional expression.
  */
 
 public class JConditionExpression extends JExpression {
 
-    /** The lhs operand. */
-    protected JExpression lhs;
+    /** The condition operand. */
+    protected JExpression condition;
 
     /** The ms operand. */
-    protected JExpression ms;
+    protected JExpression then;
     
     /** The rhs operand. */
-    protected JExpression rhs;
+    protected JExpression alternate;
 
     /**
      * Construct an AST node for a binary expression given its line number, the
@@ -36,9 +34,9 @@ public class JConditionExpression extends JExpression {
 
     protected JConditionExpression(int line, JExpression lhs, JExpression ms, JExpression rhs) {
         super(line);
-        this.lhs = lhs;
-        this.rhs = rhs;
-        this.ms = ms;
+        this.condition = lhs;
+        this.alternate = rhs;
+        this.then = ms;
     }
 
     /**
@@ -52,17 +50,17 @@ public class JConditionExpression extends JExpression {
         p.indentRight();
         p.printf("<Condition>\n");
         p.indentRight();
-        lhs.writeToStdOut(p);
+        condition.writeToStdOut(p);
         p.indentLeft();
         p.printf("</Condition>\n");
         p.printf("<TrueExpr>\n");
         p.indentRight();
-        ms.writeToStdOut(p);
+        then.writeToStdOut(p);
         p.indentLeft();
         p.printf("</TrueExpr>\n");
         p.printf("<FalseExpr>\n");
         p.indentRight();
-        rhs.writeToStdOut(p);
+        alternate.writeToStdOut(p);
         p.indentLeft();
         p.printf("</FalseExpr>\n");
         p.indentLeft();
@@ -71,10 +69,8 @@ public class JConditionExpression extends JExpression {
     
 
     /**
-     * Analysis involves first analyzing the operands. If this is a string
-     * concatenation, we rewrite the subtree to make that explicit (and analyze
-     * that). Otherwise we check the types of the addition operands and compute
-     * the result type.
+     * Analyzing the conditional expression means analyzing its components and checking
+     * that the test is boolean.
      * 
      * @param context
      *            context in which names are resolved.
@@ -82,20 +78,13 @@ public class JConditionExpression extends JExpression {
      */
 
     public JExpression analyze(Context context) {
-        lhs = (JExpression) lhs.analyze(context);
-        ms = (JExpression) ms.analyze(context);
-        rhs = (JExpression) rhs.analyze(context);
-        if (lhs.type() == Type.STRING || rhs.type() == Type.STRING) {
-            return (new JStringConcatenationOp(line, lhs, rhs))
-                    .analyze(context);
-        } else if (lhs.type() == Type.INT && rhs.type() == Type.INT) {
-            type = Type.INT;
-        } else {
-            type = Type.ANY;
-            JAST.compilationUnit.reportSemanticError(line(),
-                    "Invalid operand types for +");
-        }
-        return this;
+    	 condition = condition.analyze(context);
+         condition.type().mustMatchExpected(line(), Type.BOOLEAN);
+         then = then.analyze(context);
+         alternate = alternate.analyze(context);
+         
+         return this;
+
     }
 
     /**
@@ -110,11 +99,13 @@ public class JConditionExpression extends JExpression {
      */
 
     public void codegen(CLEmitter output) {
-        if (type == Type.INT) {
-            lhs.codegen(output);
-            rhs.codegen(output);
-            output.addNoArgInstruction(IADD);
-        }
+        String elseLabel = output.createLabel();
+        String endLabel = output.createLabel();
+        
+        condition.codegen(output, elseLabel, false);
+        then.codegen(output);
+        alternate.codegen(output);
+        output.addLabel(endLabel);
     }
 
 

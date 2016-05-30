@@ -92,14 +92,16 @@ class JTraditionForStatement extends JForStatement {
      */
 
     public JForStatement analyze(Context context) {
+    	init.analyze(context); 	
         condition = condition.analyze(context);
         condition.type().mustMatchExpected(line(), Type.BOOLEAN);
+        after.analyze(context);
         body = (JStatement) body.analyze(context);
         return this;
     }
 
     /**
-     * Generate code for the while loop.
+     * Generate code for the for loop.
      * 
      * @param output
      *            the code emitter (basically an abstraction for producing the
@@ -111,11 +113,16 @@ class JTraditionForStatement extends JForStatement {
         String test = output.createLabel();
         String out = output.createLabel();
 
+     
+        
         // Branch out of the loop on the test condition
         // being false
         output.addLabel(test);
+        
+        init.codegen(output);     
         condition.codegen(output, out, false);
-
+        after.codegen(output);
+        
         // Codegen body
         body.codegen(output);
 

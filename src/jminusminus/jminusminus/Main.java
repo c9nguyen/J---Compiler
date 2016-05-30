@@ -60,7 +60,7 @@ public class Main {
                 debugOption = args[i];
             } else if (args[i].endsWith("-d") && (i + 1) < args.length) {
                 outputDir = args[++i];
-            } else if (args[i].endsWith("-s") && (i + 1) < args.length) {
+            } else if (args[i].endsWith("-s") && (i + 1) < args.length) {          	
                 spimOutput = true;
                 registerAllocation = args[++i];
                 if (!registerAllocation.equals("naive")
