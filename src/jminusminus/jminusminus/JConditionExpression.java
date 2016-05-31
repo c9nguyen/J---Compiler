@@ -82,20 +82,13 @@ public class JConditionExpression extends JExpression {
      */
 
     public JExpression analyze(Context context) {
-        lhs = (JExpression) lhs.analyze(context);
-        ms = (JExpression) ms.analyze(context);
-        rhs = (JExpression) rhs.analyze(context);
-        if (lhs.type() == Type.STRING || rhs.type() == Type.STRING) {
-            return (new JStringConcatenationOp(line, lhs, rhs))
-                    .analyze(context);
-        } else if (lhs.type() == Type.INT && rhs.type() == Type.INT) {
-            type = Type.INT;
-        } else {
-            type = Type.ANY;
-            JAST.compilationUnit.reportSemanticError(line(),
-                    "Invalid operand types for +");
-        }
-        return this;
+    	lhs = (JExpression) lhs.analyze(context);
+    	ms = (JExpression) ms.analyze(context);
+    	type = ms.type();
+    	rhs = (JExpression) rhs.analyze(context);
+    	rhs.type().mustMatchExpected(line(), type);
+
+    	return this;
     }
 
     /**
