@@ -120,7 +120,7 @@ class JLesserThanOp extends JComparison {
     }
 
     /**
-     * Branching code generation for > operation.
+     * Branching code generation for < operation.
      * 
      * @param output
      *            the code emitter (basically an abstraction for producing the
@@ -134,7 +134,9 @@ class JLesserThanOp extends JComparison {
     public void codegen(CLEmitter output, String targetLabel, boolean onTrue) {
         lhs.codegen(output);
         rhs.codegen(output);
-        output.addBranchInstruction(onTrue ? IF_ICMPLE : IF_ICMPGT, targetLabel);
+        output
+        .addBranchInstruction(onTrue ? IF_ICMPLT : IF_ICMPGE,
+                targetLabel);
     }
 
 }
@@ -210,7 +212,7 @@ class JGTEqualOp extends JComparison {
     }
 
     /**
-     * Branching code generation for <= operation.
+     * Branching code generation for >= operation.
      * 
      * @param output
      *            the code emitter (basically an abstraction for producing the
@@ -225,8 +227,8 @@ class JGTEqualOp extends JComparison {
         lhs.codegen(output);
         rhs.codegen(output);
         output
-                .addBranchInstruction(onTrue ? IF_ICMPGT : IF_ICMPLE,
-                        targetLabel);
+        .addBranchInstruction(onTrue ? IF_ICMPGE :  IF_ICMPLT,
+                targetLabel);
     }
 
 }

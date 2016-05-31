@@ -37,7 +37,7 @@ class JLiteralFloat extends JExpression {
      */
 
     public JExpression analyze(Context context) {
-        type = Type.DOUBLE;
+        type = Type.FLOAT;
         return this;
     }
 
