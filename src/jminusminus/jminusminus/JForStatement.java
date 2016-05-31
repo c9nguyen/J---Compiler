@@ -96,6 +96,7 @@ class JTraditionForStatement extends JForStatement {
         condition = condition.analyze(context);
         condition.type().mustMatchExpected(line(), Type.BOOLEAN);
         body = (JStatement) body.analyze(context);
+        after.analyze(context);
         return this;
     }
 
@@ -112,6 +113,7 @@ class JTraditionForStatement extends JForStatement {
         String test = output.createLabel();
         String out = output.createLabel();
 
+        init.codegen(output);
         // Branch out of the loop on the test condition
         // being false
         output.addLabel(test);
@@ -119,7 +121,8 @@ class JTraditionForStatement extends JForStatement {
 
         // Codegen body
         body.codegen(output);
-
+        after.codegen(output);
+        
         // Unconditional jump back up to test
         output.addBranchInstruction(GOTO, test);
 

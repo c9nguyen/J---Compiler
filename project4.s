@@ -1,67 +1,65 @@
 # .\project4.s
 # Source file: project4.java
-# Compiled: Mon May 30 19:47:39 PDT 2016
+# Compiled: Mon May 30 20:10:29 PDT 2016
 
 .text
 
 main:
-    subu    $sp,$sp,40 	 # Stack frame is 40 bytes long
-    sw      $ra,36($sp) 	 # Save return address
-    sw      $fp,32($sp) 	 # Save frame pointer
-    sw      $t0,28($sp) 	 # Save register $t0
-    sw      $t1,24($sp) 	 # Save register $t1
-    sw      $t2,20($sp) 	 # Save register $t2
-    sw      $t0,16($sp) 	 # Save register $t0
+    subu    $sp,$sp,48 	 # Stack frame is 48 bytes long
+    sw      $ra,44($sp) 	 # Save return address
+    sw      $fp,40($sp) 	 # Save frame pointer
+    sw      $t0,36($sp) 	 # Save register $t0
+    sw      $t1,32($sp) 	 # Save register $t1
+    sw      $t2,28($sp) 	 # Save register $t2
+    sw      $t0,24($sp) 	 # Save register $t0
+    sw      $t1,20($sp) 	 # Save register $t1
+    sw      $t2,16($sp) 	 # Save register $t2
     sw      $t0,12($sp) 	 # Save register $t0
     sw      $t3,8($sp) 	 # Save register $t3
     sw      $t0,4($sp) 	 # Save register $t0
-    sw      $t3,0($sp) 	 # Save register $t3
-    addiu   $fp,$sp,36 	 # Save frame pointer
+    sw      $t1,0($sp) 	 # Save register $t1
+    addiu   $fp,$sp,44 	 # Save frame pointer
 
 main.0:
 
 main.1:
     li $t0,4
-    move $t2,$t0
+    li $t1,-1
+    add $t2,$t0,$t1
+    li $t0,0
+    move $t1,$t2
     move $t2,$t0
 
 main.2:
-    li $t0,6
-    bgt $t2,$t0,main.4
+    bgt $t2,$t1,main.4
     j main.3
 
 main.3:
     li $t0,-1
-    add $t3,$t2,$t0
-    move $t2,$t3
-    move $t2,$t3
+    add $t3,$t1,$t0
+    li $t0,-1
+    add $t1,$t2,$t0
+    move $t2,$t1
+    move $t1,$t3
     j main.2
 
 main.4:
-    bgt $t1,$t2,main.6
-    j main.5
-
-main.5:
-    li $t0,-1
-    add $t3,$t1,$t0
-    move $t1,$t3
-    j main.4
-
-main.6:
     j main.restore
 
 main.restore:
-    lw      $ra,36($sp) 	 # Restore return address
-    lw      $fp,32($sp) 	 # Restore frame pointer
-    lw      $t0,28($sp) 	 # Restore register $t0
-    lw      $t1,24($sp) 	 # Restore register $t1
-    lw      $t2,20($sp) 	 # Restore register $t2
-    lw      $t0,16($sp) 	 # Restore register $t0
+    lw      $ra,44($sp) 	 # Restore return address
+    lw      $fp,40($sp) 	 # Restore frame pointer
+    lw      $t0,36($sp) 	 # Restore register $t0
+    lw      $t1,32($sp) 	 # Restore register $t1
+    lw      $t2,28($sp) 	 # Restore register $t2
+    lw      $t0,24($sp) 	 # Restore register $t0
+    lw      $t1,20($sp) 	 # Restore register $t1
+    lw      $t2,16($sp) 	 # Restore register $t2
     lw      $t0,12($sp) 	 # Restore register $t0
     lw      $t3,8($sp) 	 # Restore register $t3
     lw      $t0,4($sp) 	 # Restore register $t0
-    lw      $t3,0($sp) 	 # Restore register $t3
-    addiu   $sp,$sp,40 	 # Pop stack
+    lw      $t1,0($sp) 	 # Restore register $t1
+    addiu   $sp,$sp,48 	 # Pop stack
     jr      $ra 	 # Return to caller
 
 
