@@ -92,6 +92,7 @@ class JTraditionForStatement extends JForStatement {
      */
 
     public JForStatement analyze(Context context) {
+    	init.analyze(context);
         condition = condition.analyze(context);
         condition.type().mustMatchExpected(line(), Type.BOOLEAN);
         body = (JStatement) body.analyze(context);
