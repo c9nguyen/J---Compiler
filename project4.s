@@ -1,105 +1,48 @@
 # .\project4.s
 # Source file: project4.java
-# Compiled: Mon May 30 20:24:39 PDT 2016
+# Compiled: Mon May 30 21:59:30 PDT 2016
 
 .text
 
 main:
-    subu    $sp,$sp,76 	 # Stack frame is 76 bytes long
-    sw      $ra,72($sp) 	 # Save return address
-    sw      $fp,68($sp) 	 # Save frame pointer
-    sw      $t0,64($sp) 	 # Save register $t0
-    sw      $t0,60($sp) 	 # Save register $t0
-    sw      $t0,56($sp) 	 # Save register $t0
-    sw      $t1,52($sp) 	 # Save register $t1
-    sw      $t2,48($sp) 	 # Save register $t2
-    sw      $t0,44($sp) 	 # Save register $t0
-    sw      $t0,40($sp) 	 # Save register $t0
-    sw      $t3,36($sp) 	 # Save register $t3
-    sw      $t0,32($sp) 	 # Save register $t0
-    sw      $t3,28($sp) 	 # Save register $t3
-    sw      $t2,24($sp) 	 # Save register $t2
-    sw      $t0,20($sp) 	 # Save register $t0
-    sw      $t4,16($sp) 	 # Save register $t4
-    sw      $t0,12($sp) 	 # Save register $t0
-    sw      $t3,8($sp) 	 # Save register $t3
-    sw      $t0,4($sp) 	 # Save register $t0
-    sw      $t0,0($sp) 	 # Save register $t0
-    addiu   $fp,$sp,72 	 # Save frame pointer
+    subu    $sp,$sp,28 	 # Stack frame is 28 bytes long
+    sw      $ra,24($sp) 	 # Save return address
+    sw      $fp,20($sp) 	 # Save frame pointer
+    sw      $t0,16($sp) 	 # Save register $t0
+    sw      $t1,12($sp) 	 # Save register $t1
+    sw      $t2,8($sp) 	 # Save register $t2
+    sw      $t3,4($sp) 	 # Save register $t3
+    sw      $t4,0($sp) 	 # Save register $t4
+    addiu   $fp,$sp,24 	 # Save frame pointer
 
 main.0:
 
 main.1:
     li $t0,4
-    move $t2,$t0
-
-main.2:
-    li $t0,6
-    bgt $t2,$t0,main.4
-    j main.3
-
-main.3:
-    li $t0,-1
-    add $t3,$t2,$t0
-    move $t2,$t3
+    li $t1,5
+    bgt $t0,$t1,main.3
     j main.2
 
+main.2:
+    li $t2,2
+    j main.4
+
+main.3:
+    li $t3,15
+
 main.4:
-    li $t0,0
-    move $t3,$t2
-    move $t2,$t0
-
-main.5:
-    bgt $t2,$t3,main.7
-    j main.6
-
-main.6:
-    li $t0,-1
-    add $t4,$t3,$t0
-    li $t0,-1
-    add $t3,$t2,$t0
-    move $t2,$t3
-    move $t3,$t4
-    j main.5
-
-main.7:
-    li $t0,5
-    bgt $t3,$t0,main.9
-    j main.8
-
-main.8:
-    li $t0,1
-    j main.10
-
-main.9:
-    li $t1,0
-
-main.10:
-    li $t0,6
-    add $t0,$t1,$t0
+    NLIRGetField.toSpim() not yet implemented!
     j main.restore
 
 main.restore:
-    lw      $ra,72($sp) 	 # Restore return address
-    lw      $fp,68($sp) 	 # Restore frame pointer
-    lw      $t0,64($sp) 	 # Restore register $t0
-    lw      $t0,60($sp) 	 # Restore register $t0
-    lw      $t0,56($sp) 	 # Restore register $t0
-    lw      $t1,52($sp) 	 # Restore register $t1
-    lw      $t2,48($sp) 	 # Restore register $t2
-    lw      $t0,44($sp) 	 # Restore register $t0
-    lw      $t0,40($sp) 	 # Restore register $t0
-    lw      $t3,36($sp) 	 # Restore register $t3
-    lw      $t0,32($sp) 	 # Restore register $t0
-    lw      $t3,28($sp) 	 # Restore register $t3
-    lw      $t2,24($sp) 	 # Restore register $t2
-    lw      $t0,20($sp) 	 # Restore register $t0
-    lw      $t4,16($sp) 	 # Restore register $t4
-    lw      $t0,12($sp) 	 # Restore register $t0
-    lw      $t3,8($sp) 	 # Restore register $t3
-    lw      $t0,4($sp) 	 # Restore register $t0
-    lw      $t0,0($sp) 	 # Restore register $t0
-    addiu   $sp,$sp,76 	 # Pop stack
+    lw      $ra,24($sp) 	 # Restore return address
+    lw      $fp,20($sp) 	 # Restore frame pointer
+    lw      $t0,16($sp) 	 # Restore register $t0
+    lw      $t1,12($sp) 	 # Restore register $t1
+    lw      $t2,8($sp) 	 # Restore register $t2
+    lw      $t3,4($sp) 	 # Restore register $t3
+    lw      $t4,0($sp) 	 # Restore register $t4
+    addiu   $sp,$sp,28 	 # Pop stack
     jr      $ra 	 # Return to caller
 
 

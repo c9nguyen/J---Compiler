@@ -59,23 +59,16 @@ class JDoWhileStatement extends JStatement {
      */
 
     public void codegen(CLEmitter output) {
-        // Need two labels
-        String test = output.createLabel();
-        String out = output.createLabel();
-
-        // Branch out of the loop on the test condition
-        // being false
-        output.addLabel(test);
-        condition.codegen(output, out, false);
-
+        String bodyLabel = output.createLabel();
+        
+        //Label the body
+        output.addLabel(bodyLabel);
         // Codegen body
         body.codegen(output);
-
-        // Unconditional jump back up to test
-        output.addBranchInstruction(GOTO, test);
-
-        // The label below and outside the loop
-        output.addLabel(out);
+        
+        // Branch out of the loop on the test condition
+        // being true
+        condition.codegen(output, bodyLabel, true);
     }
 
     /**
