@@ -426,7 +426,7 @@ class Type {
     					: cls == char.class ? "C"
     							: cls == double.class ? "D"
     									: cls == float.class ? "F"
-    											: cls == long.class ? "L"
+    											: cls == long.class ? "J"
     													: cls == boolean.class ? "Z" : "?")
     					: "L" + cls.getName().replace('.', '/') + ";";
     }

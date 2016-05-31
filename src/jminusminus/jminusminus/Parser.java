@@ -771,7 +771,7 @@ public class Parser {
         	  JStatement statement = statement();    	  
         	  if (have(WHILE)) {
         		  JExpression test = parExpression();
-        		  return new JWhileStatement(line, test, statement);
+        		  return new JDoWhileStatement(line, test, statement);
         	  } else if (have(UNTIL)) {
         		  JExpression test = parExpression();
         		  return new JUntilStatement(line, test, statement);

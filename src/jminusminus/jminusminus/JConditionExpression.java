@@ -4,11 +4,17 @@ package jminusminus;
 import static jminusminus.CLConstants.*;
 
 /**
+<<<<<<< HEAD
  * The AST node for a conditional expression.
+=======
+ * The AST node for a condition statement. A condition statement has a condition and
+ * two expressions: for true and false.
+>>>>>>> Chinh
  */
 
 public class JConditionExpression extends JExpression {
 
+<<<<<<< HEAD
     /** The condition operand. */
     protected JExpression condition;
 
@@ -17,6 +23,16 @@ public class JConditionExpression extends JExpression {
     
     /** The rhs operand. */
     protected JExpression alternate;
+=======
+    /** The condition expression. */
+    protected JExpression condition;
+
+    /** The true expression. */
+    protected JExpression trueExpression;
+    
+    /** The false expression. */
+    protected JExpression falseExpression;
+>>>>>>> Chinh
 
     /**
      * Construct an AST node for a binary expression given its line number, the
@@ -35,8 +51,13 @@ public class JConditionExpression extends JExpression {
     protected JConditionExpression(int line, JExpression lhs, JExpression ms, JExpression rhs) {
         super(line);
         this.condition = lhs;
+<<<<<<< HEAD
         this.alternate = rhs;
         this.then = ms;
+=======
+        this.falseExpression = rhs;
+        this.trueExpression = ms;
+>>>>>>> Chinh
     }
 
     /**
@@ -55,12 +76,20 @@ public class JConditionExpression extends JExpression {
         p.printf("</Condition>\n");
         p.printf("<TrueExpr>\n");
         p.indentRight();
+<<<<<<< HEAD
         then.writeToStdOut(p);
+=======
+        trueExpression.writeToStdOut(p);
+>>>>>>> Chinh
         p.indentLeft();
         p.printf("</TrueExpr>\n");
         p.printf("<FalseExpr>\n");
         p.indentRight();
+<<<<<<< HEAD
         alternate.writeToStdOut(p);
+=======
+        falseExpression.writeToStdOut(p);
+>>>>>>> Chinh
         p.indentLeft();
         p.printf("</FalseExpr>\n");
         p.indentLeft();
@@ -78,6 +107,7 @@ public class JConditionExpression extends JExpression {
      */
 
     public JExpression analyze(Context context) {
+<<<<<<< HEAD
     	 condition = condition.analyze(context);
          condition.type().mustMatchExpected(line(), Type.BOOLEAN);
          then = then.analyze(context);
@@ -85,6 +115,16 @@ public class JConditionExpression extends JExpression {
          
          return this;
 
+=======
+    	condition = (JExpression) condition.analyze(context);
+    	condition.type.mustMatchExpected(line(), Type.BOOLEAN);
+    	trueExpression = (JExpression) trueExpression.analyze(context);
+    	type = trueExpression.type();
+    	falseExpression = (JExpression) falseExpression.analyze(context);
+    	falseExpression.type().mustMatchExpected(line(), type);
+
+    	return this;
+>>>>>>> Chinh
     }
 
     /**
@@ -99,6 +139,7 @@ public class JConditionExpression extends JExpression {
      */
 
     public void codegen(CLEmitter output) {
+<<<<<<< HEAD
         String elseLabel = output.createLabel();
         String endLabel = output.createLabel();
         
@@ -106,6 +147,16 @@ public class JConditionExpression extends JExpression {
         then.codegen(output);
         alternate.codegen(output);
         output.addLabel(endLabel);
+=======
+    		String falseLabel = output.createLabel();
+    		String endLabel = output.createLabel();
+            condition.codegen(output, falseLabel, false);
+            trueExpression.codegen(output);
+            output.addBranchInstruction(GOTO, endLabel);
+            output.addLabel(falseLabel);
+            falseExpression.codegen(output);
+            output.addLabel(endLabel);
+>>>>>>> Chinh
     }
 
 

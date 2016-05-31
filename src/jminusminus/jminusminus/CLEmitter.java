@@ -1154,7 +1154,7 @@ public class CLEmitter {
             String descriptor, ArrayList<String> exceptions, boolean isSynthetic) {
         if (!validMethodDescriptor(descriptor)) {
             reportEmitterError(
-                    "'%s' is not a valid type descriptor for method",
+                    "'%s' is not a valid type descriptor for method2",
                     descriptor);
         }
         endOpenMethodIfAny(); // close any previous method

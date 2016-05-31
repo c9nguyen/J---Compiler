@@ -2,6 +2,8 @@
 
 package jminusminus;
 
+import static jminusminus.CLConstants.*;
+
 /**
  * The AST node for an expression that appears as a throw statement. Only the
  * expressions that have a side-effect are valid statement expressions.
@@ -37,7 +39,8 @@ class JThrowStatement extends JStatement {
      */
 
     public JStatement analyze(Context context) {
-//TO DO analyze
+    	//TO DO analyze
+    	expr = expr.analyze(context);
         return this;
     }
 
@@ -52,6 +55,7 @@ class JThrowStatement extends JStatement {
 
     public void codegen(CLEmitter output) {
         expr.codegen(output);
+        output.addNoArgInstruction(ATHROW);
     }
 
     /**

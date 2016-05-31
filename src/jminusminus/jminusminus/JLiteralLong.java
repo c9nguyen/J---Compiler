@@ -37,12 +37,12 @@ class JLiteralLong extends JExpression {
      */
 
     public JExpression analyze(Context context) {
-        type = Type.DOUBLE;
+        type = Type.LONG;
         return this;
     }
 
     /**
-     * Generating code for an double literal means generating code to push it onto
+     * Generating code for an long literal means generating code to push it onto
      * the stack.
      * 
      * @param output
@@ -68,7 +68,7 @@ class JLiteralLong extends JExpression {
      */
 
     public void writeToStdOut(PrettyPrinter p) {
-        p.printf("<JLiteralDouble line=\"%d\" type=\"%s\" " + "value=\"%s\"/>\n",
+        p.printf("<JLiteralLong line=\"%d\" type=\"%s\" " + "value=\"%s\"/>\n",
                 line(), ((type == null) ? "" : type.toString()), text);
     }
 
